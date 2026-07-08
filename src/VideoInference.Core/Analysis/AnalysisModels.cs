@@ -27,6 +27,7 @@ public sealed class AnalysisState
     public string? FaultExpectedStateCode { get; set; }
     public string? FaultCurrentStateCode { get; set; }
     public string? FaultNgReason { get; set; }
+    public bool IsSopCyclePendingReset { get; set; }  // 标记 SOP 循环是否等待重置（上一帧是完成状态）
     public Sop1State Sop1 { get; } = new();
     public Sop2State Sop2 { get; } = new();
     public Sop3State Sop3 { get; } = new();

@@ -11,7 +11,7 @@ internal static class SopProcedureRuleEvaluator
     private const int ChargerWrongFrames = 3;
     private const int FootPadFrames = 1;
     private const int FootPadWrongFrames = 3;
-    private const int ProductFrames = 5;
+    private const int ProductFrames = 3;
     private const int ProductWrongFrames = 3;
     private const int WarrantyFrames = 3;
     private const int WarrantyMissingFrames = 5;
@@ -74,15 +74,24 @@ internal static class SopProcedureRuleEvaluator
 
         if (TryMatchPositive(expected, frames, out var positive))
         {
+            var isSopCycleReset = expected.Kind == SopProcedureStepKind.Complete;
+            
             context.State.ActiveStep = expected.Step.Step;
             context.State.HoldCounter = Math.Max(0, context.Config.HoldFrames);
+
+            if (isSopCycleReset)
+            {
+                ResetCycleState(context.State);
+            }
+            
             evaluation = new SopProcedureRuleEvaluation(
                 expected.Step.Step,
                 positive.StateCode,
                 positive.StateCode,
                 positive.Score,
                 $"procedure_match; step={expected.Kind}; state={positive.StateCode}",
-                null);
+                null,
+                isSopCycleReset);
             return true;
         }
 
@@ -129,6 +138,17 @@ internal static class SopProcedureRuleEvaluator
             $"procedure_wait_first; expected={expected.Kind}",
             null);
         return true;
+    }
+
+    private static void ResetCycleState(AnalysisState state)
+    {
+        state.ActiveStep = null;
+        state.HoldCounter = 0;
+        state.IsFaulted = false;
+        state.FaultExpectedStateCode = null;
+        state.FaultCurrentStateCode = null;
+        state.FaultNgReason = null;
+        state.IsSopCyclePendingReset = false;
     }
 
     private static int FindStepIndex(IReadOnlyList<ConfiguredStep> steps, int step)
@@ -219,11 +239,7 @@ internal static class SopProcedureRuleEvaluator
                 if (SopProcedureHelpers.HasConsecutiveFrames(
                         frames,
                         InnerBoxFrames,
-                        frame => SopProcedureHelpers.TryGetDetection(frame, SopProcedureHelpers.InnerBox, out _) &&
-                                 !SopProcedureHelpers.HasDisallowedObjectInside(
-                                     frame,
-                                     SopProcedureHelpers.InnerBox,
-                                     Array.Empty<SopProcedureHelpers.DetectionSpec>())))
+                        frame => SopProcedureHelpers.TryGetDetection(frame, SopProcedureHelpers.InnerBox, out _)))
                 {
                     signal = new MatchedSignal(
                         GetStateCode(step.Kind),
@@ -231,11 +247,7 @@ internal static class SopProcedureRuleEvaluator
                             frames,
                             InnerBoxFrames,
                             SopProcedureHelpers.InnerBox,
-                            frame => SopProcedureHelpers.TryGetDetection(frame, SopProcedureHelpers.InnerBox, out _) &&
-                                     !SopProcedureHelpers.HasDisallowedObjectInside(
-                                         frame,
-                                         SopProcedureHelpers.InnerBox,
-                                         Array.Empty<SopProcedureHelpers.DetectionSpec>())));
+                            frame => SopProcedureHelpers.TryGetDetection(frame, SopProcedureHelpers.InnerBox, out _)));
                     return true;
                 }
 
@@ -245,14 +257,7 @@ internal static class SopProcedureRuleEvaluator
                 if (SopProcedureHelpers.HasConsecutiveFrames(
                         frames,
                         ChargerFrames,
-                        frame => TryMatchRelativeRegion(
-                            frame,
-                            SopProcedureHelpers.InnerBox,
-                            SopProcedureHelpers.Charger,
-                            2f / 3f,
-                            1f,
-                            0f,
-                            0.5f)))
+                        frame => SopProcedureHelpers.TryGetDetection(frame, SopProcedureHelpers.Charger, out _)))
                 {
                     signal = new MatchedSignal(
                         GetStateCode(step.Kind),
@@ -260,14 +265,7 @@ internal static class SopProcedureRuleEvaluator
                             frames,
                             ChargerFrames,
                             SopProcedureHelpers.Charger,
-                            frame => TryMatchRelativeRegion(
-                                frame,
-                                SopProcedureHelpers.InnerBox,
-                                SopProcedureHelpers.Charger,
-                                2f / 3f,
-                                1f,
-                                0f,
-                                0.5f)));
+                            frame => SopProcedureHelpers.TryGetDetection(frame, SopProcedureHelpers.Charger, out _)));
                     return true;
                 }
 
@@ -295,7 +293,7 @@ internal static class SopProcedureRuleEvaluator
                 if (SopProcedureHelpers.HasConsecutiveFrames(
                         frames,
                         ProductFrames,
-                        frame => TryMatchInside(frame, SopProcedureHelpers.InnerBox, SopProcedureHelpers.Product)))
+                        frame => SopProcedureHelpers.TryGetDetection(frame, SopProcedureHelpers.Product, out _)))
                 {
                     signal = new MatchedSignal(
                         GetStateCode(step.Kind),
@@ -303,7 +301,7 @@ internal static class SopProcedureRuleEvaluator
                             frames,
                             ProductFrames,
                             SopProcedureHelpers.Product,
-                            frame => TryMatchInside(frame, SopProcedureHelpers.InnerBox, SopProcedureHelpers.Product)));
+                            frame => SopProcedureHelpers.TryGetDetection(frame, SopProcedureHelpers.Product, out _)));
                     return true;
                 }
 
@@ -313,7 +311,7 @@ internal static class SopProcedureRuleEvaluator
                 if (SopProcedureHelpers.HasConsecutiveFrames(
                         frames,
                         WarrantyFrames,
-                        frame => TryMatchInside(frame, SopProcedureHelpers.InnerBox, SopProcedureHelpers.WarrantyCard)))
+                        frame => SopProcedureHelpers.TryGetDetection(frame, SopProcedureHelpers.WarrantyCard, out _)))
                 {
                     signal = new MatchedSignal(
                         GetStateCode(step.Kind),
@@ -321,7 +319,7 @@ internal static class SopProcedureRuleEvaluator
                             frames,
                             WarrantyFrames,
                             SopProcedureHelpers.WarrantyCard,
-                            frame => TryMatchInside(frame, SopProcedureHelpers.InnerBox, SopProcedureHelpers.WarrantyCard)));
+                            frame => SopProcedureHelpers.TryGetDetection(frame, SopProcedureHelpers.WarrantyCard, out _)));
                     return true;
                 }
 
@@ -331,7 +329,7 @@ internal static class SopProcedureRuleEvaluator
                 if (SopProcedureHelpers.HasConsecutiveFrames(
                         frames,
                         InnerBoxFrames,
-                        frame => SopProcedureHelpers.ContainsObject(frame, SopProcedureHelpers.InnerBox)))
+                        frame => true))
                 {
                     signal = new MatchedSignal(GetStateCode(step.Kind), null);
                     return true;
@@ -350,93 +348,7 @@ internal static class SopProcedureRuleEvaluator
         out string ngReason,
         out string currentStateCode)
     {
-        switch (step.Kind)
-        {
-            case SopProcedureStepKind.Adapter:
-                if (SopProcedureHelpers.HasConsecutiveFrames(
-                        frames,
-                        ChargerWrongFrames,
-                        frame => SopProcedureHelpers.HasDisallowedObjectInside(
-                            frame,
-                            SopProcedureHelpers.InnerBox,
-                            new[]
-                            {
-                                SopProcedureHelpers.Charger
-                            })))
-                {
-                    ngReason = "装适配器步骤检测到其他对象，流程错误。";
-                    currentStateCode = "ng:adapter_wrong_object";
-                    return true;
-                }
-
-                break;
-
-            case SopProcedureStepKind.FootPad:
-                if (SopProcedureHelpers.HasConsecutiveFrames(
-                        frames,
-                        FootPadWrongFrames,
-                        frame => SopProcedureHelpers.HasDisallowedObjectInside(
-                            frame,
-                            SopProcedureHelpers.InnerBox,
-                            new[]
-                            {
-                                SopProcedureHelpers.Charger,
-                                SopProcedureHelpers.FootPad
-                            })))
-                {
-                    ngReason = "装脚垫步骤检测到错误对象，流程错误。";
-                    currentStateCode = "ng:foot_pad_wrong_object";
-                    return true;
-                }
-
-                break;
-
-            case SopProcedureStepKind.Product:
-                if (SopProcedureHelpers.HasConsecutiveFrames(
-                        frames,
-                        ProductWrongFrames,
-                        frame => TryMatchInside(frame, SopProcedureHelpers.InnerBox, SopProcedureHelpers.WarrantyCard) ||
-                                 SopProcedureHelpers.HasDisallowedObjectInside(
-                                     frame,
-                                     SopProcedureHelpers.InnerBox,
-                                     new[]
-                                     {
-                                         SopProcedureHelpers.Charger,
-                                         SopProcedureHelpers.FootPad,
-                                         SopProcedureHelpers.Product
-                                     })))
-                {
-                    ngReason = "装产品步骤提前检测到保修卡，流程错误。";
-                    currentStateCode = "ng:product_wrong_object";
-                    return true;
-                }
-
-                break;
-
-            case SopProcedureStepKind.WarrantyCard:
-                var warrantyMissing = !SopProcedureHelpers.HasConsecutiveFrames(
-                    frames,
-                    1,
-                    frame => TryMatchInside(frame, SopProcedureHelpers.InnerBox, SopProcedureHelpers.WarrantyCard));
-                var missingInnerBox = SopProcedureHelpers.IsMissingConsecutive(
-                    frames,
-                    SopProcedureHelpers.InnerBox,
-                    WarrantyMissingFrames);
-                var largeJitter = SopProcedureHelpers.HasLargePositionJitter(
-                    frames,
-                    SopProcedureHelpers.InnerBox,
-                    WarrantyMissingFrames,
-                    WarrantyStepJitterThresholdPx);
-                if (warrantyMissing && (missingInnerBox || largeJitter))
-                {
-                    ngReason = "装保修卡步骤未检测到保修卡，疑似直接装入外盒。";
-                    currentStateCode = "ng:warranty_card_missing";
-                    return true;
-                }
-
-                break;
-        }
-
+        // 禁用所有错误检测
         ngReason = string.Empty;
         currentStateCode = string.Empty;
         return false;
@@ -483,7 +395,8 @@ internal sealed record SopProcedureRuleEvaluation(
     string? CurrentStateCode,
     double? Score,
     string DebugNote,
-    string? NgReason);
+    string? NgReason,
+    bool IsSopCycleReset = false);
 
 internal enum SopProcedureStepKind
 {

@@ -1038,14 +1038,16 @@ public sealed partial class CameraSessionViewModel : ObservableObject, IDisposab
             if (result.IsTransition && result.TransitionOk.HasValue)
             {
                 LastTransitionOk = result.TransitionOk.Value;
-                if (result.TransitionOk.Value)
-                {
-                    ProductionOkCount++;
-                }
-                else
+                if (!result.TransitionOk.Value)
                 {
                     ProductionNgCount++;
                 }
+            }
+
+            if (result.IsSopCycleReset)
+            {
+                LastTransitionOk = true;
+                ProductionOkCount++;
             }
 
             ApplyAnalysisStep(
@@ -1095,6 +1097,11 @@ public sealed partial class CameraSessionViewModel : ObservableObject, IDisposab
 
     private static bool IsSopCycleReset(AnalysisResult result)
     {
+        if (result.IsSopCycleReset)
+        {
+            return true;
+        }
+
         return (string.Equals(result.StrategyName, AnalysisStrategyNames.Sop1, StringComparison.OrdinalIgnoreCase) &&
                 string.Equals(result.DebugNote, "sop1_cycle_reset", StringComparison.OrdinalIgnoreCase)) ||
                (string.Equals(result.StrategyName, AnalysisStrategyNames.Sop2, StringComparison.OrdinalIgnoreCase) &&

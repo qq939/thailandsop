@@ -1,0 +1,32 @@
+{
+  "id": "yolo11m-sop3-detect",
+  "displayName": "YOLO11m SOP3 Detection",
+  "description": "YOLO11m ONNX horizontal bounding-box detection model trained on the SOP3 dataset (640 input, 6 classes).",
+  "taskType": "detection",
+  "modelFile": "best.onnx",
+  "inputWidth": 640,
+  "inputHeight": 640,
+  "classes": [
+    "内盒",
+    "脚垫",
+    "产品",
+    "外盒",
+    "充电器",
+    "保修卡"
+  ],
+  "boxColors": [
+    "#29B6F6",
+    "#66BB6A",
+    "#FFA726",
+    "#EF5350",
+    "#AB47BC",
+    "#26A69A"
+  ],
+  "boxThickness": 2,
+  "labelFontScale": 0.9,
+  "yolo": {
+    "outputLayout": "channels_first",
+    "scoreMode": "class_only",
+    "classCount": 6
+  }
+}

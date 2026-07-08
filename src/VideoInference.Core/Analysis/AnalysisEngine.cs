@@ -203,8 +203,11 @@ public sealed class AnalysisEngine : ILegacyDetectionResultSink
         _state.FaultExpectedStateCode = null;
         _state.FaultCurrentStateCode = null;
         _state.FaultNgReason = null;
+        _state.IsSopCyclePendingReset = false;
         _state.Sop1.ResetCycle();
         _state.Sop2.ResetCycle();
+        _state.Sop3.ResetCycle();
+        _state.Sop4.ResetCycle();
         _state.ModbusTriggerStates.Clear();
     }
 
@@ -255,7 +258,8 @@ public sealed class AnalysisEngine : ILegacyDetectionResultSink
             ToStep = newStep,
             CurrentStateCode = raw.CurrentStateCode,
             ExpectedStateCode = raw.ExpectedStateCode,
-            NgReason = raw.NgReason
+            NgReason = raw.NgReason,
+            IsSopCycleReset = raw.IsSopCycleReset
         };
     }
 
