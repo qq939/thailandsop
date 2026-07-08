@@ -1,0 +1,28 @@
+{
+  "id": "xany_train-obb",
+  "displayName": "xany_train YOLO11 OBB",
+  "description": "YOLO11 ONNX oriented bounding-box model (640 input, 1 classes).",
+  "taskType": "obb",
+  "modelFile": "best.onnx",
+  "inputWidth": 640,
+  "inputHeight": 640,
+  "classes": [
+    "A"
+  ],
+  "boxColors": [
+    "#29B6F6"
+  ],
+  "boxThickness": 2,
+  "labelFontScale": 0.9,
+  "yolo": {
+    "outputLayout": "channels_first",
+    "scoreMode": "class_only",
+    "classCount": 1,
+    "minScore": 0.25,
+    "nmsThreshold": 0.6,
+    "locatorMinScore": 0.5
+  },
+  "locator": {
+    "minScore": 0.5
+  }
+}

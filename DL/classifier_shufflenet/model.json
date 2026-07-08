@@ -1,0 +1,22 @@
+{
+  "id": "classifier-shufflenet",
+  "displayName": "Product Presence Classifier (ShuffleNet)",
+  "description": "ShuffleNetV2_x0.5 product presence classifier: OK=present, NG=absent.",
+  "taskType": "presence_classification",
+  "modelFile": "model.onnx",
+  "inputWidth": 224,
+  "inputHeight": 224,
+  "classes": [
+    "OK",
+    "NG"
+  ],
+  "boxColors": [
+    "#4CAF50",
+    "#EF5350"
+  ],
+  "classification": {
+    "presentClass": "OK",
+    "absentClass": "NG",
+    "probabilityThreshold": 0.5
+  }
+}

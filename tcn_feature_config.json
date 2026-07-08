@@ -1,0 +1,10 @@
+{
+  "Enabled": true,
+  "Name": "det_topk",
+  "Version": "v1",
+  "TopK": 5,
+  "IncludeClassId": true,
+  "IncludeScore": true,
+  "UseCenterSize": true,
+  "Normalize": true
+}

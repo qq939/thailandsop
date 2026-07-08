@@ -1,0 +1,97 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <BooleanToVisibilityConverter x:Key="FsmBoolToVisibilityConverter" />
+
+    <DataTemplate x:Key="FsmStepTemplate">
+        <Border Margin="0,0,0,6"
+                Padding="0"
+                Background="{Binding CardBackground}"
+                BorderBrush="{Binding CardBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid Margin="10,5,10,5" MinHeight="38">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="34" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="74" />
+                        <ColumnDefinition Width="84" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Width="26"
+                            Height="26"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Background="{Binding StepBadgeBackground}"
+                            CornerRadius="13">
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="12"
+                                   FontWeight="SemiBold"
+                                   Foreground="White"
+                                   Text="{Binding Step}" />
+                    </Border>
+
+                    <TextBlock Grid.Column="1"
+                               Margin="0,0,8,0"
+                               VerticalAlignment="Center"
+                               FontWeight="SemiBold"
+                               Foreground="#213243"
+                               Text="{Binding Name}"
+                               TextWrapping="Wrap"
+                               ToolTip="{Binding Name}" />
+
+                    <Border Grid.Column="2"
+                            Width="58"
+                            Height="24"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Background="{Binding StatusBadgeBackground}"
+                            CornerRadius="12">
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Foreground="{Binding StatusBadgeForeground}"
+                                   Text="{Binding StatusText}" />
+                    </Border>
+
+                    <TextBlock Grid.Column="3"
+                               VerticalAlignment="Center"
+                               FontFamily="Consolas"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               Foreground="#2E3A48"
+                               Text="{Binding TimelineTimeText, Mode=OneWay}"
+                               TextAlignment="Right" />
+
+                </Grid>
+
+                <Grid Grid.Row="1"
+                      Margin="44,0,12,8"
+                      Visibility="{Binding IsExpanded, Converter={StaticResource FsmBoolToVisibilityConverter}}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <TextBlock Foreground="#748191" Text="耗时 " />
+                        <TextBlock Margin="0,0,12,0"
+                                   FontFamily="Consolas"
+                                   Foreground="#415163"
+                                   Text="{Binding CurrentStepTimeText, Mode=OneWay}" />
+                        <TextBlock Foreground="#748191" Text="结束 " />
+                        <TextBlock FontFamily="Consolas"
+                                   Foreground="#415163"
+                                   Text="{Binding EndTimeText, Mode=OneWay}" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </DataTemplate>
+</ResourceDictionary>

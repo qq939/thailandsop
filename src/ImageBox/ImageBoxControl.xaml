@@ -1,0 +1,57 @@
+<UserControl x:Class="ImageBox.ImageBoxControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ImageBox"
+             mc:Ignorable="d" 
+             x:Name="ImageBoxControlRoot"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <Border BorderBrush="Gray" BorderThickness="1">
+            <Canvas x:Name="MainCanvas" Background="Black" ClipToBounds="True"
+                    MouseWheel="MainCanvas_MouseWheel"
+                    MouseLeftButtonDown="MainCanvas_MouseLeftButtonDown"
+                    MouseLeftButtonUp="MainCanvas_MouseLeftButtonUp"
+                    MouseMove="MainCanvas_MouseMove">
+                <Grid x:Name="ImageLayer"
+                      RenderOptions.BitmapScalingMode="HighQuality">
+                    <Grid.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform x:Name="ImageScaleTransform" ScaleX="1" ScaleY="1" />
+                            <TranslateTransform x:Name="ImageTranslateTransform" X="0" Y="0" />
+                        </TransformGroup>
+                    </Grid.RenderTransform>
+                    <Image x:Name="DisplayImage"
+                           Stretch="Fill" />
+                    <Canvas x:Name="OverlayCanvas"
+                            ClipToBounds="False"
+                            IsHitTestVisible="False" />
+                    <ContentPresenter x:Name="OverlayPresenter"
+                                      Content="{Binding OverlayContent, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Stretch"
+                                      IsHitTestVisible="False" />
+                </Grid>
+            </Canvas>
+        </Border>
+        
+        <!-- 右下角的信息面板 -->
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="5">
+            <!-- 缩放信息 -->
+            <TextBlock x:Name="ScaleInfoText" Foreground="White" Background="#80000000" Padding="5">
+                缩放: 100%
+            </TextBlock>
+            
+            <!-- 鼠标坐标信息 -->
+            <TextBlock x:Name="CoordinateInfoText" Foreground="White" Background="#80000000" Padding="5" Margin="0,2,0,0">
+                坐标: (0, 0)
+            </TextBlock>
+            
+            <!-- 亮度值信息（预留） -->
+            <TextBlock x:Name="BrightnessInfoText" Foreground="White" Background="#80000000" Padding="5" Margin="0,2,0,0" Visibility="Collapsed">
+                颜色: -
+            </TextBlock>
+        </StackPanel>
+    </Grid>
+</UserControl>

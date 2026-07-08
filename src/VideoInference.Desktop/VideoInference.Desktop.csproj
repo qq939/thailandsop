@@ -1,0 +1,98 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <AssemblyName>VideoInferenceDemo</AssemblyName>
+    <RootNamespace>VideoInferenceDemo</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <Platforms>AnyCPU;x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+    <PackageReference Include="MaterialDesignColors" Version="5.3.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="5.3.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.Managed" Version="1.23.2" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime.Gpu.Windows" Version="1.23.2" GeneratePathProperty="true" />
+    <PackageReference Include="NewLife.Core" Version="11.15.2026.501" />
+    <PackageReference Include="OpenCvSharp4" Version="4.11.0.20250507" />
+    <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.11.0.20250507" />
+    <PackageReference Include="Sdcb.FFmpeg" Version="6.1.0.2" />
+    <PackageReference Include="Sdcb.FFmpeg.runtime.windows-x64" Version="6.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\VideoInference.Camera\VideoInference.Camera.csproj" />
+    <ProjectReference Include="..\VideoInference.Core\VideoInference.Core.csproj" />
+    <ProjectReference Include="..\VideoInference.Desktop.Shared\VideoInference.Desktop.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="..\..\app_config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>app_config.json</TargetPath>
+    </Content>
+    <Content Include="..\..\DL\**\*.*" Exclude="..\..\DL\MediaPipeHand\hand_landmarker.task">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>DL\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </Content>
+    <Content Include="..\..\workers\**\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>workers\%(RecursiveDir)%(Filename)%(Extension)</TargetPath>
+    </Content>
+    <Content Include="..\..\tcn_feature_config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>tcn_feature_config.json</TargetPath>
+    </Content>
+    <Content Include="..\..\tcn_infer_config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>tcn_infer_config.json</TargetPath>
+    </Content>
+    <Content Include="..\..\ThirdParty\zlibwapi.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>zlibwapi.dll</TargetPath>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\\AppIcon.ico" />
+    <Resource Include="Assets\\AMSLogo.png" />
+  </ItemGroup>
+
+  <Target Name="CopyMediaPipeTaskFileIfMissing" AfterTargets="Build" Condition="Exists('..\..\DL\MediaPipeHand\hand_landmarker.task') and !Exists('$(TargetDir)DL\MediaPipeHand\hand_landmarker.task')">
+    <MakeDir Directories="$(TargetDir)DL\MediaPipeHand" />
+    <Copy SourceFiles="..\..\DL\MediaPipeHand\hand_landmarker.task" DestinationFiles="$(TargetDir)DL\MediaPipeHand\hand_landmarker.task" SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="ForceWindowsOrtGpuRuntime" AfterTargets="Build">
+    <ItemGroup>
+      <OrtGpuWindowsNative Include="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime.dll" />
+      <OrtGpuWindowsNative Include="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime.lib" />
+      <OrtGpuWindowsNative Include="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_cuda.dll" />
+      <OrtGpuWindowsNative Include="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_cuda.lib" />
+      <OrtGpuWindowsNative Include="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_shared.dll" />
+      <OrtGpuWindowsNative Include="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_shared.lib" />
+      <OrtGpuWindowsNative Include="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_tensorrt.dll" />
+      <OrtGpuWindowsNative Include="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_tensorrt.lib" />
+    </ItemGroup>
+
+    <Copy SourceFiles="@(OrtGpuWindowsNative)" DestinationFolder="$(TargetDir)runtimes\win-x64\native" SkipUnchangedFiles="true" Condition="'@(OrtGpuWindowsNative)' != ''" />
+
+    <Copy SourceFiles="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" Condition="Exists('$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime.dll')" />
+    <Copy SourceFiles="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_shared.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" Condition="Exists('$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_shared.dll')" />
+    <Copy SourceFiles="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_cuda.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" Condition="Exists('$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_cuda.dll')" />
+    <Copy SourceFiles="$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_tensorrt.dll" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" Condition="Exists('$(PkgMicrosoft_ML_OnnxRuntime_Gpu_Windows)\runtimes\win-x64\native\onnxruntime_providers_tensorrt.dll')" />
+  </Target>
+
+  <Target Name="CopyZlibForCuda" AfterTargets="Build">
+    <Copy SourceFiles="..\..\ThirdParty\zlibwapi.dll" DestinationFolder="$(TargetDir)runtimes\win-x64\native" SkipUnchangedFiles="true" />
+  </Target>
+
+</Project>

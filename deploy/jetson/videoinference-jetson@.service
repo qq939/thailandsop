@@ -1,0 +1,31 @@
+[Unit]
+Description=VideoInference Jetson Headless Instance (%i)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/videoinference/%i
+EnvironmentFile=-/etc/videoinference/videoinference-jetson-%i.env
+ExecStart=/usr/bin/dotnet /opt/videoinference/%i/VideoInference.Jetson.dll \
+  --camera-config ${CAMERA_CONFIG:-/opt/videoinference/%i/camera_config.json} \
+  --camera ${CAMERA_ID:-} \
+  --camera-index ${CAMERA_INDEX:-0} \
+  --camera-source ${CAMERA_SOURCE:-} \
+  --opencv-backend ${OPENCV_BACKEND:-} \
+  --model-root ${MODEL_ROOT:-/opt/videoinference/%i/DL} \
+  --model ${MODEL_ID:-} \
+  --record-root ${RECORD_ROOT:-/data/videoinference} \
+  --log-dir ${LOG_DIR:-/opt/videoinference/%i/logs} \
+  --ort-native ${ORT_NATIVE:-/opt/onnxruntime/libonnxruntime.so} \
+  --providers ${ORT_PROVIDERS:-tensorrt,cuda,cpu} \
+  --device-id ${ORT_DEVICE_ID:-0}
+Restart=always
+RestartSec=3
+User=video
+Group=video
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

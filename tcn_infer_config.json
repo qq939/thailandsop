@@ -1,0 +1,11 @@
+{
+  "Enabled": false,
+  "ModelPath": "DL\\tcn.onnx",
+  "ClassesPath": "DL\\tcn_classes.json",
+  "WindowSize": 32,
+  "Stride": 4,
+  "QueueCapacity": 512,
+  "ApplySoftmax": true,
+  "InputName": "",
+  "OutputName": ""
+}

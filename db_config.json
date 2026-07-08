@@ -1,0 +1,5 @@
+{
+  "EnableRawDetections": true,
+  "EnableTcnFeatures": false,
+  "EnableTcnInference": false
+}

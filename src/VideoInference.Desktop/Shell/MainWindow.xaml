@@ -1,0 +1,397 @@
+<Window x:Class="VideoInferenceDemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:VideoInferenceDemo"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="{Binding WindowTitle}"
+        Width="1360"
+        Height="840"
+        MinWidth="1180"
+        MinHeight="760"
+        Icon="/Assets/AppIcon.ico"
+        Background="#F3F6FA"
+        FontFamily="Segoe UI">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+        <Style x:Key="CameraTabItemStyle" TargetType="TabItem">
+            <Setter Property="Padding" Value="12,4" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+            <Setter Property="Foreground" Value="#3A4A5B" />
+            <Setter Property="Background" Value="#EDF2F8" />
+            <Setter Property="BorderBrush" Value="#D5DFEA" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Border x:Name="TabBorder"
+                                Margin="{TemplateBinding Margin}"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10,10,0,0">
+                            <ContentPresenter ContentSource="Header" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="#E4F0FB" />
+                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="#91BCE8" />
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="TabBorder" Property="Background" Value="#D9ECFF" />
+                                <Setter TargetName="TabBorder" Property="BorderBrush" Value="#4D93DA" />
+                                <Setter TargetName="TabBorder" Property="BorderThickness" Value="2" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="CameraSessionHeaderTemplate">
+            <Grid MinWidth="164">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Text="{Binding TabTitle}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                <TextBlock Grid.Row="1"
+                           Margin="0,1,0,0"
+                           FontSize="10"
+                           Opacity="0.75"
+                           Text="{Binding UiStatusBadgeText}" />
+                <TextBlock Grid.Column="1"
+                           Grid.RowSpan="2"
+                           Margin="8,0,0,0"
+                           MaxWidth="260"
+                           FontSize="10"
+                           Opacity="0.75"
+                           TextWrapping="Wrap"
+                           Text="{Binding SourceLabel}"
+                           ToolTip="{Binding SourceLabel}" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="72" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Background="#16324F">
+            <Grid Margin="18,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="48" Height="52" Margin="0,0,12,0" Background="Transparent">
+                        <Image Source="/Assets/AMSLogo.png"
+                               Stretch="Uniform"
+                               RenderOptions.BitmapScalingMode="HighQuality" />
+                    </Border>
+                    <StackPanel>
+                        <TextBlock FontSize="17" FontWeight="SemiBold" Foreground="White" Text="{Binding HomeTitle}" />
+                    </StackPanel>
+
+                    <Border Margin="16,0,0,0"
+                            Padding="12,4"
+                            CornerRadius="14"
+                            Background="#1E3D5F"
+                            BorderBrush="#3D6E9E"
+                            BorderThickness="1">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Grid Width="18"
+                                  Height="18"
+                                  Visibility="{Binding IsSystemStarting, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <materialDesign:PackIcon Kind="Sync"
+                                                         Foreground="#8FCAFF"
+                                                         RenderTransformOrigin="0.5,0.5">
+                                    <materialDesign:PackIcon.RenderTransform>
+                                        <RotateTransform />
+                                    </materialDesign:PackIcon.RenderTransform>
+                                </materialDesign:PackIcon>
+                                <Grid.Triggers>
+                                    <EventTrigger RoutedEvent="Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard RepeatBehavior="Forever">
+                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                                                 From="0"
+                                                                 To="360"
+                                                                 Duration="0:0:1.5" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Grid.Triggers>
+                            </Grid>
+                            <Grid Width="18"
+                                  Height="18"
+                                  Visibility="{Binding IsSystemRunning, Converter={StaticResource BoolToVisibilityConverter}}">
+                                <materialDesign:PackIcon Kind="PlayCircleOutline"
+                                                         Foreground="#4CAF50" />
+                                <Grid.Triggers>
+                                    <EventTrigger RoutedEvent="Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                 From="1"
+                                                                 To="0.45"
+                                                                 Duration="0:0:0.8" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Grid.Triggers>
+                            </Grid>
+                            <materialDesign:PackIcon Width="18"
+                                                     Height="18"
+                                                     Foreground="#9E9E9E"
+                                                     Kind="StopCircleOutline"
+                                                     Visibility="{Binding IsSystemIdle, Converter={StaticResource BoolToVisibilityConverter}}" />
+                            <TextBlock Margin="6,0,0,0"
+                                       VerticalAlignment="Center"
+                                       FontSize="13"
+                                       Foreground="#C9D8E6"
+                                       Text="{Binding SystemStatusText}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button MinWidth="100"
+                            Margin="0,0,8,0"
+                            Command="{Binding StartAllCamerasCommand}"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Visibility="{Binding HasCameraSessions, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Foreground="White" BorderBrush="#3D6E9E">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="PlayCircleOutline" Width="18" Height="18" Foreground="#8FCAFF" />
+                            <TextBlock Text="启动全部" Margin="6,0,0,0" />
+                        </StackPanel>
+                    </Button>
+                    <Button MinWidth="100"
+                            Margin="0,0,16,0"
+                            Command="{Binding StopAllCamerasCommand}"
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Visibility="{Binding HasCameraSessions, Converter={StaticResource BoolToVisibilityConverter}}"
+                            Foreground="White" BorderBrush="#3D6E9E">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="StopCircleOutline" Width="18" Height="18" Foreground="#FF8A80" />
+                            <TextBlock Text="停止全部" Margin="6,0,0,0" />
+                        </StackPanel>
+                    </Button>
+
+                    <Border Width="1" Height="28" Background="#2E5274" Margin="0,0,16,0" />
+
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
+                        <materialDesign:PackIcon Kind="AccountCircle" Width="20" Height="20" Foreground="#8FCAFF" VerticalAlignment="Center" />
+                        <TextBlock Margin="6,0,8,0"
+                                   VerticalAlignment="Center"
+                                   Foreground="#C9D8E6"
+                                   Text="登录员工" />
+                        <Border MinWidth="180"
+                                Padding="10,5"
+                                Background="#1E3D5F"
+                                BorderBrush="#3D6E9E"
+                                BorderThickness="1"
+                                CornerRadius="14">
+                            <TextBlock Foreground="White"
+                                       Text="{Binding CurrentLoginDisplayText}"
+                                       TextTrimming="CharacterEllipsis"
+                                       ToolTip="{Binding CurrentLoginDisplayText}" />
+                        </Border>
+                        <Button MinWidth="68"
+                                Height="32"
+                                Margin="10,0,0,0"
+                                Command="{Binding LoginCommand}"
+                                Content="登录"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Foreground="White"
+                                BorderBrush="#3D6E9E" />
+                        <Button MinWidth="68"
+                                Height="32"
+                                Margin="8,0,0,0"
+                                Command="{Binding LogoutCommand}"
+                                Content="注销"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Foreground="White"
+                                BorderBrush="#3D6E9E" />
+                    </StackPanel>
+
+                    <Border Width="1" Height="28" Background="#2E5274" Margin="0,0,12,0" />
+                    <materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
+                        <materialDesign:PopupBox.ToggleContent>
+                            <Border Width="34" Height="34" Background="#284766" CornerRadius="17">
+                                <materialDesign:PackIcon Width="18"
+                                                         Height="18"
+                                                         HorizontalAlignment="Center"
+                                                         VerticalAlignment="Center"
+                                                         Foreground="#D5E1ED"
+                                                         Kind="DotsVertical" />
+                            </Border>
+                        </materialDesign:PopupBox.ToggleContent>
+                        <Border Width="220" Padding="10" Background="White" CornerRadius="10">
+                            <StackPanel>
+                                <TextBlock Margin="0,0,0,10"
+                                           FontSize="13"
+                                           FontWeight="SemiBold"
+                                           Foreground="#223446"
+                                           Text="全局操作" />
+                                <Button Margin="0,0,0,6"
+                                        Command="{Binding OpenSystemSettingsCommand}"
+                                        Content="系统设置"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                <Button Margin="0,0,0,6"
+                                        Command="{Binding OpenCameraConfigCommand}"
+                                        Content="相机设置"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                <Button Margin="0,0,0,6"
+                                        Command="{Binding OpenSopConfigCommand}"
+                                        Content="SOP 配置"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                <Button Margin="0,0,0,6"
+                                        Command="{Binding OpenPerformanceDiagnosticsCommand}"
+                                        Content="性能诊断"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                <Button Margin="0,0,0,6"
+                                        Command="{Binding OpenPersonnelManagementCommand}"
+                                        Content="人员管理"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                <Button Margin="0,0,0,6"
+                                        Command="{Binding OpenProductionDashboardCommand}"
+                                        Content="生产看板"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}" />
+                                <Border Height="1" Margin="0,6" Background="#E0E6ED" />
+                            </StackPanel>
+                        </Border>
+                    </materialDesign:PopupBox>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="18">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TabControl Grid.Row="0"
+                        Margin="0,0,0,10"
+                        Background="#F3F6FA"
+                        BorderThickness="0"
+                        ItemsSource="{Binding CameraSessions}"
+                        SelectedItem="{Binding SelectedCameraSession}"
+                        Visibility="{Binding Workspace.CameraSessionStripVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TabControl.ItemContainerStyle>
+                    <StaticResource ResourceKey="CameraTabItemStyle" />
+                </TabControl.ItemContainerStyle>
+                <TabControl.ItemTemplate>
+                    <StaticResource ResourceKey="CameraSessionHeaderTemplate" />
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <Grid Height="0" />
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+
+            <Grid Grid.Row="1" Visibility="{Binding Workspace.VideoPreviewVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2.15*" />
+                    <ColumnDefinition Width="1.02*" />
+                </Grid.ColumnDefinitions>
+
+                <local:WorkspacePreviewCard Grid.Column="0" Margin="0,0,18,0" />
+
+                <Border Grid.Column="1"
+                        Padding="8"
+                        Background="#EEF3F8"
+                        BorderBrush="#D6E0EA"
+                        BorderThickness="1"
+                        CornerRadius="12">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <local:WorkspaceOverviewCard Margin="0,0,0,8" />
+                            <local:WorkspaceFsmCard Margin="0,0,0,8" />
+                            <local:WorkspaceStatsCard />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <TabControl Grid.Row="1"
+                        Background="#F3F6FA"
+                        BorderThickness="0"
+                        ItemsSource="{Binding CameraSessions}"
+                        SelectedItem="{Binding SelectedCameraSession}"
+                        Visibility="{Binding Workspace.CameraPreviewVisible, Converter={StaticResource BoolToVisibilityConverter}}">
+                <TabControl.ItemContainerStyle>
+                    <StaticResource ResourceKey="CameraTabItemStyle" />
+                </TabControl.ItemContainerStyle>
+                <TabControl.ItemTemplate>
+                    <StaticResource ResourceKey="CameraSessionHeaderTemplate" />
+                </TabControl.ItemTemplate>
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2.15*" />
+                                <ColumnDefinition Width="1.02*" />
+                            </Grid.ColumnDefinitions>
+
+                            <local:CameraSessionPreviewCard Grid.Column="0" Margin="0,0,18,0" />
+
+                            <Border Grid.Column="1"
+                                    Padding="8"
+                                    Background="#EEF3F8"
+                                    BorderBrush="#D6E0EA"
+                                    BorderThickness="1"
+                                    CornerRadius="12">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                    <StackPanel>
+                                        <local:CameraSessionOverviewCard Margin="0,0,0,8" />
+                                        <local:CameraSessionFsmCard Margin="0,0,0,8" />
+                                        <local:CameraSessionStatsCard />
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+        </Grid>
+
+        <Border Grid.Row="2"
+                Height="28"
+                Padding="16,0"
+                Background="#132639"
+                BorderBrush="#1E3D5F"
+                BorderThickness="0,1,0,0">
+            <Grid>
+                <Border Padding="10,3"
+                        CornerRadius="4"
+                        Background="#A83228"
+                        HorizontalAlignment="Left"
+                        Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <TextBlock VerticalAlignment="Center"
+                               FontSize="12"
+                               Foreground="White"
+                               Text="{Binding LastError}"
+                               TextWrapping="Wrap"
+                               MaxWidth="960"
+                               ToolTip="{Binding LastError}" />
+                </Border>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

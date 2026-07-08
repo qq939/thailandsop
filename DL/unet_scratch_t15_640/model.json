@@ -1,0 +1,22 @@
+{
+  "id": "unet-scratch-t15-640",
+  "displayName": "U-Net Scratch Segmentation",
+  "description": "U-Net resnet34 binary scratch segmentation model.",
+  "taskType": "unet_segmentation",
+  "modelFile": "model.onnx",
+  "inputWidth": 640,
+  "inputHeight": 640,
+  "classes": [
+    "scratch"
+  ],
+  "boxColors": [
+    "#EF5350"
+  ],
+  "unet": {
+    "probabilityThreshold": 0.6,
+    "minComponentArea": 20,
+    "minComponentPerimeter": 0,
+    "minAreaPerimeterRatio": 0,
+    "maxAreaPerimeterRatio": 0
+  }
+}

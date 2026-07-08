@@ -1,0 +1,29 @@
+{
+  "id": "yolo11m-schaeffler-detect",
+  "displayName": "YOLO11m Detection",
+  "description": "YOLO11m ONNX detection model trained from official pretrained weights on the Schaeffler dataset (640 input, 4 classes).",
+  "taskType": "detection",
+  "modelFile": "best.onnx",
+  "inputWidth": 640,
+  "inputHeight": 640,
+  "classes": [
+    "框架",
+    "垫片",
+    "铁片",
+    "手"
+  ],
+  "boxColors": [
+    "#29B6F6",
+    "#66BB6A",
+    "#FFA726",
+    "#EF5350"
+  ],
+  "boxThickness": 2,
+  "labelFontScale": 0.9
+  ,
+  "yolo": {
+    "outputLayout": "channels_first",
+    "scoreMode": "class_only",
+    "classCount": 4
+  }
+}

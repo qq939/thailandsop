@@ -1,0 +1,18 @@
+{
+  "id": "mediapipe-hand-landmarks",
+  "displayName": "MediaPipe Hand Landmarks",
+  "taskKind": "HandLandmarks",
+  "runtimeKind": "MediaPipe",
+  "metadata": {
+    "taskFilePath": "hand_landmarker.task",
+    "workerKind": "mediapipe_hand",
+    "workerPythonPath": ".runtime\\micromamba\\envs\\mediapipe-hand-py311\\python.exe",
+    "workerScriptPath": "..\\..\\workers\\mediapipe_hand\\worker.py",
+    "workerProtocol": "NamedPipe",
+    "maxHands": "2",
+    "minHandDetectionConfidence": "0.5",
+    "minHandPresenceConfidence": "0.5",
+    "minTrackingConfidence": "0.5",
+    "preferredInputSize": "256"
+  }
+}

@@ -1,0 +1,136 @@
+<Window x:Class="VideoInferenceDemo.PerformanceDiagnosticsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        Title="性能诊断"
+        Width="1220"
+        Height="720"
+        MinWidth="1040"
+        MinHeight="620"
+        WindowStartupLocation="CenterOwner"
+        Background="#F3F6FA"
+        FontFamily="Segoe UI">
+    <Grid Margin="18">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <materialDesign:Card Grid.Row="0" Padding="18" Margin="0,0,0,16" Background="White">
+            <StackPanel>
+                <TextBlock FontSize="18" FontWeight="SemiBold" Text="性能诊断" />
+                <TextBlock Margin="0,6,0,0"
+                           Foreground="#5B6978"
+                           Text="直接订阅每个 session 的实时耗时快照，用来观察 capture、infer、annotate、render 和 record-enqueue 的阶段成本。"
+                           TextWrapping="Wrap" />
+            </StackPanel>
+        </materialDesign:Card>
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2.2*" />
+                <ColumnDefinition Width="1*" />
+            </Grid.ColumnDefinitions>
+
+            <materialDesign:Card Grid.Column="0" Padding="12" Margin="0,0,16,0" Background="White">
+                <DataGrid ItemsSource="{Binding Sessions}"
+                          SelectedItem="{Binding SelectedSession, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          HeadersVisibility="Column"
+                          IsReadOnly="True"
+                          RowHeaderWidth="0"
+                          GridLinesVisibility="Horizontal"
+                          SelectionMode="Single"
+                          SelectionUnit="FullRow">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Session" Binding="{Binding Name, Mode=OneWay}" Width="120" />
+                        <DataGridTextColumn Header="模式" Binding="{Binding SourceModeText, Mode=OneWay}" Width="72" />
+                        <DataGridTextColumn Header="运行态" Binding="{Binding UiRunStateText, Mode=OneWay}" Width="100" />
+                        <DataGridTextColumn Header="设备" Binding="{Binding InferenceDeviceText, Mode=OneWay}" Width="140" />
+                        <DataGridTextColumn Header="Cap FPS" Binding="{Binding CaptureFps, Mode=OneWay, StringFormat={}{0:F1}}" Width="74" />
+                        <DataGridTextColumn Header="Infer FPS" Binding="{Binding InferFps, Mode=OneWay, StringFormat={}{0:F1}}" Width="74" />
+                        <DataGridTextColumn Header="Render FPS" Binding="{Binding RenderFps, Mode=OneWay, StringFormat={}{0:F1}}" Width="80" />
+                        <DataGridTextColumn Header="Capture Avg" Binding="{Binding CaptureStageAverageMs, Mode=OneWay, StringFormat={}{0:F2} ms}" Width="92" />
+                        <DataGridTextColumn Header="Infer Avg" Binding="{Binding InferStageAverageMs, Mode=OneWay, StringFormat={}{0:F2} ms}" Width="86" />
+                        <DataGridTextColumn Header="ORT Run" Binding="{Binding ModelOrtRunAverageMs, Mode=OneWay, StringFormat={}{0:F2} ms}" Width="82" />
+                        <DataGridTextColumn Header="Pre" Binding="{Binding ModelPreprocessAverageMs, Mode=OneWay, StringFormat={}{0:F2} ms}" Width="70" />
+                        <DataGridTextColumn Header="Post" Binding="{Binding ModelPostprocessAverageMs, Mode=OneWay, StringFormat={}{0:F2} ms}" Width="70" />
+                        <DataGridTextColumn Header="Model Total" Binding="{Binding ModelTotalAverageMs, Mode=OneWay, StringFormat={}{0:F2} ms}" Width="92" />
+                        <DataGridTextColumn Header="Annotate Avg" Binding="{Binding AnnotateStageAverageMs, Mode=OneWay, StringFormat={}{0:F2} ms}" Width="100" />
+                        <DataGridTextColumn Header="Render Avg" Binding="{Binding RenderPresentStageAverageMs, Mode=OneWay, StringFormat={}{0:F2} ms}" Width="94" />
+                        <DataGridTextColumn Header="Record Avg" Binding="{Binding RecordEnqueueStageAverageMs, Mode=OneWay, StringFormat={}{0:F2} ms}" Width="96" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </materialDesign:Card>
+
+            <materialDesign:Card Grid.Column="1" Padding="18" Background="White">
+                <StackPanel>
+                    <TextBlock FontSize="15" FontWeight="SemiBold" Text="当前选中" />
+                    <TextBlock Margin="0,8,0,0" FontWeight="SemiBold" Text="{Binding SummaryText}" TextWrapping="Wrap" />
+                    <TextBlock Margin="0,4,0,0" Foreground="#5B6978" Text="{Binding DeviceText}" TextWrapping="Wrap" />
+
+                    <UniformGrid Margin="0,16,0,0" Columns="2">
+                        <Border Margin="0,0,8,8" Padding="12" Background="#F5F8FC" CornerRadius="10">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="Capture" />
+                                <TextBlock Margin="0,6,0,0" Text="{Binding SelectedSession.CaptureStageAverageMs, Mode=OneWay, StringFormat=平均 {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.CaptureStageMaxMs, Mode=OneWay, StringFormat=峰值 {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.CaptureStageSampleCount, Mode=OneWay, StringFormat=样本 {0}}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="0,0,0,8" Padding="12" Background="#F5F8FC" CornerRadius="10">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="Infer" />
+                                <TextBlock Margin="0,6,0,0" Text="{Binding SelectedSession.InferStageAverageMs, Mode=OneWay, StringFormat=平均 {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.InferStageMaxMs, Mode=OneWay, StringFormat=峰值 {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.InferStageSampleCount, Mode=OneWay, StringFormat=样本 {0}}" />
+                                <TextBlock Margin="0,8,0,0" Text="{Binding SelectedSession.ModelOrtRunAverageMs, Mode=OneWay, StringFormat=ORT {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.ModelPreprocessAverageMs, Mode=OneWay, StringFormat=Pre {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.ModelPostprocessAverageMs, Mode=OneWay, StringFormat=Post {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.ModelTotalAverageMs, Mode=OneWay, StringFormat=Model {0:F2} ms}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="0,0,8,8" Padding="12" Background="#F5F8FC" CornerRadius="10">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="Annotate" />
+                                <TextBlock Margin="0,6,0,0" Text="{Binding SelectedSession.AnnotateStageAverageMs, Mode=OneWay, StringFormat=平均 {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.AnnotateStageMaxMs, Mode=OneWay, StringFormat=峰值 {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.AnnotateStageSampleCount, Mode=OneWay, StringFormat=样本 {0}}" />
+                            </StackPanel>
+                        </Border>
+                        <Border Margin="0,0,0,8" Padding="12" Background="#F5F8FC" CornerRadius="10">
+                            <StackPanel>
+                                <TextBlock FontWeight="SemiBold" Text="Render" />
+                                <TextBlock Margin="0,6,0,0" Text="{Binding SelectedSession.RenderPresentStageAverageMs, Mode=OneWay, StringFormat=平均 {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.RenderPresentStageMaxMs, Mode=OneWay, StringFormat=峰值 {0:F2} ms}" />
+                                <TextBlock Text="{Binding SelectedSession.RenderPresentStageSampleCount, Mode=OneWay, StringFormat=样本 {0}}" />
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <Border Padding="12" Background="#F5F8FC" CornerRadius="10">
+                        <StackPanel>
+                            <TextBlock FontWeight="SemiBold" Text="Record Enqueue" />
+                            <TextBlock Margin="0,6,0,0" Text="{Binding SelectedSession.RecordEnqueueStageAverageMs, Mode=OneWay, StringFormat=平均 {0:F2} ms}" />
+                            <TextBlock Text="{Binding SelectedSession.RecordEnqueueStageMaxMs, Mode=OneWay, StringFormat=峰值 {0:F2} ms}" />
+                            <TextBlock Text="{Binding SelectedSession.RecordEnqueueStageSampleCount, Mode=OneWay, StringFormat=样本 {0}}" />
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </materialDesign:Card>
+        </Grid>
+
+        <materialDesign:Card Grid.Row="2" Padding="16" Margin="0,16,0,0" Background="White">
+            <StackPanel>
+                <TextBlock FontWeight="SemiBold" Text="最后错误" />
+                <TextBlock Margin="0,8,0,0" Foreground="#B00020" Text="{Binding LastErrorText}" TextWrapping="Wrap" />
+            </StackPanel>
+        </materialDesign:Card>
+    </Grid>
+</Window>

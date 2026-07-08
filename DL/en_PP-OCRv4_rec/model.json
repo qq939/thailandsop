@@ -1,0 +1,10 @@
+{
+  "id": "en-ppocrv4-rec",
+  "displayName": "PP-OCRv4 英文识别",
+  "description": "PaddleOCR PP-OCRv4 英文识别模型，用于 ROI 内字母数字序列号识别。输入 [1,3,48,W] BGR float32，输出 CTC 概率序列。",
+  "taskType": "ocr_text",
+  "modelFile": "model.onnx",
+  "dictFile": "en_dict.txt",
+  "inputWidth": 512,
+  "inputHeight": 48
+}

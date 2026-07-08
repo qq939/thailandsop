@@ -1,0 +1,40 @@
+{
+  "id": "xany_train-hbb",
+  "displayName": "sop2",
+  "description": "YOLO11 ONNX horizontal bounding-box detection model (640 input, 9 classes).",
+  "taskType": "detection",
+  "modelFile": "best.onnx",
+  "inputWidth": 640,
+  "inputHeight": 640,
+  "classes": [
+    "产品",
+    "产品2",
+    "压紧",
+    "固定块",
+    "扩口",
+    "把手",
+    "接头",
+    "检测接头",
+    "润滑"
+  ],
+  "boxColors": [
+    "#29B6F6",
+    "#66BB6A",
+    "#FFA726",
+    "#EF5350",
+    "#AB47BC",
+    "#26A69A",
+    "#EC407A",
+    "#7E57C2",
+    "#26C6DA"
+  ],
+  "boxThickness": 2,
+  "labelFontScale": 0.9,
+  "yolo": {
+    "outputLayout": "channels_first",
+    "scoreMode": "class_only",
+    "classCount": 9,
+    "minScore": 0.25,
+    "nmsThreshold": 0.45
+  }
+}

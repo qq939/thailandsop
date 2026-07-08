@@ -1,0 +1,110 @@
+<UserControl x:Class="VideoInferenceDemo.WorkspaceStatsCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <materialDesign:Card Padding="6" Background="White">
+        <Expander IsExpanded="{Binding IsMetricsExpanded, Mode=TwoWay}"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  MinHeight="0">
+            <Expander.Header>
+                <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="#1F3347" Text="生产统计" />
+            </Expander.Header>
+            <StackPanel Margin="0,4,0,0">
+                <DockPanel Margin="0,0,0,10">
+                    <TextBlock DockPanel.Dock="Left" Foreground="#748191" Text="更新时间" />
+                    <TextBlock DockPanel.Dock="Right" Foreground="#4A5565" Text="{Binding Workspace.ProductionLastUpdateText}" />
+                </DockPanel>
+
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0"
+                            Margin="0,0,6,0"
+                            Padding="12,10"
+                            Background="#EAF7EF"
+                            BorderBrush="#CFEADA"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                        <StackPanel>
+                            <TextBlock Foreground="#4E7B60" Text="OK 数量" />
+                            <TextBlock Margin="0,6,0,0"
+                                       FontSize="26"
+                                       FontWeight="Bold"
+                                       Foreground="#177245"
+                                       Text="{Binding Workspace.ProductionOkCount}" />
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1"
+                            Margin="6,0,0,0"
+                            Padding="12,10"
+                            Background="#FDF0F0"
+                            BorderBrush="#F3D7D7"
+                            BorderThickness="1"
+                            CornerRadius="10">
+                        <StackPanel>
+                            <TextBlock Foreground="#926161" Text="NG 数量" />
+                            <TextBlock Margin="0,6,0,0"
+                                       FontSize="26"
+                                       FontWeight="Bold"
+                                       Foreground="#A64040"
+                                       Text="{Binding Workspace.ProductionNgCount}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border Margin="0,0,0,12"
+                        Padding="12,10"
+                        Background="#F7F9FC"
+                        BorderBrush="#DCE4ED"
+                        BorderThickness="1"
+                        CornerRadius="10">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <DockPanel Grid.Row="0">
+                            <TextBlock DockPanel.Dock="Left" Foreground="#5D6A79" Text="良率" />
+                            <TextBlock DockPanel.Dock="Right"
+                                       FontSize="20"
+                                       FontWeight="SemiBold"
+                                       Foreground="#0F5A91"
+                                       Text="{Binding Workspace.ProductionYieldText}" />
+                        </DockPanel>
+
+                        <ProgressBar Grid.Row="1"
+                                     Margin="0,8,0,0"
+                                     Height="8"
+                                     Minimum="0"
+                                     Maximum="100"
+                                     Foreground="#0F8F4E"
+                                     Background="#E6EDF5"
+                                     Value="{Binding Workspace.ProductionYieldPercent, Mode=OneWay}" />
+                    </Grid>
+                </Border>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Foreground="#748191" Text="作业时间" />
+                    <TextBlock Grid.Column="1" Margin="10,0,16,0" Foreground="#2E3A48" Text="{Binding Workspace.ProductionWorkDurationText}" />
+                    <TextBlock Grid.Column="2" Foreground="#748191" Text="员工" />
+                    <TextBlock Grid.Column="3" Margin="10,0,0,0" Foreground="#2E3A48" Text="{Binding Workspace.ProductionEmployeeText}" />
+                </Grid>
+            </StackPanel>
+        </Expander>
+    </materialDesign:Card>
+</UserControl>

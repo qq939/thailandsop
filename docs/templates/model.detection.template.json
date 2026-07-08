@@ -1,0 +1,23 @@
+{
+  "id": "your-detection-model-id",
+  "displayName": "Your Detection Model",
+  "description": "Detection model bundle.",
+  "taskType": "detection",
+  "modelFile": "model.onnx",
+  "classes": [
+    "class_a",
+    "class_b",
+    "class_c"
+  ],
+  "boxColors": [
+    "#29B6F6",
+    "#66BB6A",
+    "#FFA726"
+  ],
+  "boxThickness": 2,
+  "labelFontScale": 0.9,
+  "yolo": {
+    "outputLayout": "channels_first",
+    "scoreMode": "class_only"
+  }
+}

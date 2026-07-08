@@ -1,0 +1,14 @@
+{
+  "id": "ppocr-en-pipeline",
+  "displayName": "PP-OCRv5 英文管线",
+  "description": "RapidOcrNet PP-OCRv5 latin OCR pipeline. Runs text detection and recognition inside the configured ROI.",
+  "taskType": "ocr_pipeline",
+  "detFile": "det.onnx",
+  "clsFile": "cls.onnx",
+  "recFile": "rec.onnx",
+  "dictFile": "en_dict.txt",
+  "ocr": {
+    "doAngle": false,
+    "returnWordBox": false
+  }
+}

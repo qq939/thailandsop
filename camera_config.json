@@ -1,0 +1,50 @@
+{
+  "Cameras": [
+    {
+      "Id": "camera-1",
+      "Name": "Camera 1",
+      "Enabled": true,
+      "AutoStart": false,
+      "ProviderId": "opencv",
+      "CameraIndex": 0,
+      "DeviceId": "",
+      "TargetFps": 30.0,
+      "UseSourcePtsForVideo": true,
+      "PrimaryTaskId": "yolo11m-sop3-detect",
+      "SelectedSopProfileId": "sop-default",
+      "EnableSopAnalysis": true,
+      "AnalysisFrameWindowSize": 100,
+      "AnalysisStateWindowSize": 30,
+      "AnalysisHoldFrames": 10,
+      "SopWindowMs": 1500,
+      "SopMinScoreQ1000": 450,
+      "SopMinVisibleRatioQ1000": 600,
+      "EnableCameraRecording": true,
+      "RecordingRootDirectory": "Recordings",
+      "RecordingSegmentMinutes": 5,
+      "RecordingContainerFormat": "mkv",
+      "RecordingVideoEncoder": "hevc_nvenc",
+      "RecordingCodecFourcc": "MJPG",
+      "RecordingQueueCapacity": 120,
+      "RecordingBitrateMbps": 8,
+      "RecordingFps": 30.0
+    }
+  ],
+  "SopProfiles": [
+    {
+      "Id": "sop-default",
+      "Name": "默认组装 SOP",
+      "Strategy": "sop_rules",
+      "FingerprintModuleId": "fingerprint-1",
+      "Steps": [
+        { "Step": 1, "Name": "拿内盒完成" },
+        { "Step": 2, "Name": "装适配器完成" },
+        { "Step": 3, "Name": "装脚垫完成" },
+        { "Step": 4, "Name": "装产品完成" },
+        { "Step": 5, "Name": "装保修卡完成" },
+        { "Step": 6, "Name": "装外盒完成" }
+      ]
+    }
+  ],
+  "SelectedCameraId": "camera-1"
+}

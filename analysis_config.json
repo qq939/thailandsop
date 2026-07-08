@@ -1,0 +1,8 @@
+{
+  "EnableOnlineAnalysis": true,
+  "FrameWindowSize": 100,
+  "StateWindowSize": 30,
+  "NearThresholdQ1000": 300,
+  "NearStep": null,
+  "HoldFrames": 10
+}

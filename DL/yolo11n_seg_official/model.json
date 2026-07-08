@@ -1,0 +1,31 @@
+{
+  "id": "yolo11m-schaeffler-seg",
+  "displayName": "YOLO11m Segmentation",
+  "description": "YOLO11m ONNX segmentation model trained on the Schaeffler segmentation dataset (640 input, 4 classes).",
+  "taskType": "segmentation",
+  "modelFile": "yolo11m-seg-schaeffler.onnx",
+  "inputWidth": 640,
+  "inputHeight": 640,
+  "classes": [
+    "Switch",
+    "Instruction",
+    "Rubber feet",
+    "Charger"
+  ],
+  "boxColors": [
+    "#29B6F6",
+    "#66BB6A",
+    "#FFA726",
+    "#EF5350"
+  ],
+  "boxThickness": 2,
+  "labelFontScale": 0.9,
+  "yolo": {
+    "outputLayout": "channels_first",
+    "scoreMode": "class_only",
+    "classCount": 4,
+    "detectionOutputName": "output0",
+    "prototypeOutputName": "output1",
+    "maskThreshold": 0.5
+  }
+}

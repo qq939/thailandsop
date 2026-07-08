@@ -1,0 +1,74 @@
+{
+  "id": "your-sequence-model-id",
+  "displayName": "Your Sequence Model",
+  "description": "Sequence-bands model bundle.",
+  "taskType": "sequence_bands",
+  "modelFile": "sequence_model.onnx",
+  "classes": [
+    "background",
+    "A",
+    "B",
+    "C"
+  ],
+  "boxColor": [
+    "#00FF00",
+    "#00B4FF",
+    "#FFB000",
+    "#00B000"
+  ],
+  "boxThickness": 4,
+  "labelFontScale": 3,
+  "sequence": {
+    "input_name": "input",
+    "output_name": "logits",
+    "input_shape": [
+      1,
+      3,
+      512,
+      768
+    ],
+    "output_shape": [
+      1,
+      4,
+      128
+    ],
+    "class_names": [
+      "background",
+      "A",
+      "B",
+      "C"
+    ],
+    "background_id": 0,
+    "seq_len": 128,
+    "preprocess": {
+      "resize_height": 512,
+      "resize_width": 768,
+      "image_preprocess": "center_width_crop",
+      "crop_bottom_ratio": 0.3333333,
+      "color_mode": "RGB",
+      "normalize_mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "normalize_std": [
+        0.229,
+        0.224,
+        0.225
+      ],
+      "layout": "NCHW",
+      "dtype": "float32",
+      "value_range": [
+        0.0,
+        1.0
+      ],
+      "internal_coord_y_channel": true
+    },
+    "postprocess": {
+      "output_type": "logits",
+      "argmax_dim": 1,
+      "recommended_min_segment_length": 4,
+      "ignore_background_in_final_layers": true
+    }
+  }
+}

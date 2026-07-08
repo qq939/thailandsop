@@ -1,0 +1,756 @@
+<Window x:Class="VideoInferenceDemo.CameraConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:camera="clr-namespace:VideoInferenceDemo;assembly=VideoInference.Camera"
+        mc:Ignorable="d"
+        Title="相机配置"
+        Height="760"
+        Width="1080"
+        MinHeight="700"
+        MinWidth="980"
+        WindowStartupLocation="CenterOwner"
+        Background="#F3F6FA"
+        Foreground="{DynamicResource MaterialDesignBody}"
+        FontFamily="Segoe UI">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+
+        <Style x:Key="PrimaryDialogButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource MaterialDesignRaisedButton}">
+            <Setter Property="MinWidth" Value="108" />
+            <Setter Property="Height" Value="38" />
+            <Setter Property="Padding" Value="18,0" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+        </Style>
+
+        <Style x:Key="SecondaryDialogButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+            <Setter Property="MinWidth" Value="96" />
+            <Setter Property="Height" Value="38" />
+            <Setter Property="Padding" Value="18,0" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+        </Style>
+
+        <Style x:Key="IconToolButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+            <Setter Property="Width" Value="42" />
+            <Setter Property="Height" Value="42" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,8,0" />
+        </Style>
+
+        <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="#1F2937" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#667085" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="12.5" />
+        </Style>
+
+        <Style x:Key="SectionCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="#F8FAFC" />
+            <Setter Property="BorderBrush" Value="#DCE4ED" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="16" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="310" />
+            <ColumnDefinition Width="18" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0"
+                Grid.ColumnSpan="3"
+                Margin="0,0,0,10"
+                Background="#EEF3F8"
+                BorderBrush="#D6E0EA"
+                BorderThickness="1"
+                CornerRadius="14"
+                Padding="14,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="相机配置"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="#1F2937" />
+                </StackPanel>
+
+                <Border Grid.Column="1"
+                        Background="#FFFFFF"
+                        BorderBrush="#D6E0EA"
+                        BorderThickness="1"
+                        CornerRadius="10"
+                        Padding="14,8"
+                        Margin="16,0,0,0"
+                        VerticalAlignment="Center">
+                    <StackPanel>
+                        <TextBlock Text="当前数量"
+                                   Foreground="#667085"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="{Binding Cameras.Count}"
+                                   FontSize="24"
+                                   FontWeight="Bold"
+                                   Foreground="#0F5A91"
+                                   HorizontalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <materialDesign:Card Grid.Row="1" Grid.Column="0" Padding="18">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Text="相机列表" Style="{StaticResource SectionTitleStyle}" />
+
+                <ListBox Grid.Row="1"
+                         ItemsSource="{Binding Cameras}"
+                         SelectedItem="{Binding SelectedCamera}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Margin="0,6,0,12"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="Margin" Value="0,0,0,8" />
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            <Setter Property="Background" Value="#F8FAFC" />
+                            <Setter Property="BorderBrush" Value="#DCE4ED" />
+                            <Setter Property="BorderThickness" Value="1" />
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border x:Name="SelectionChrome"
+                                                Background="{TemplateBinding Background}"
+                                                BorderBrush="{TemplateBinding BorderBrush}"
+                                                BorderThickness="{TemplateBinding BorderThickness}"
+                                                CornerRadius="12"
+                                                SnapsToDevicePixels="True">
+                                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsSelected" Value="True">
+                                                <Setter TargetName="SelectionChrome" Property="Background" Value="#DCEEFE" />
+                                                <Setter TargetName="SelectionChrome" Property="BorderBrush" Value="#0F5A91" />
+                                                <Setter TargetName="SelectionChrome" Property="BorderThickness" Value="2" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Padding="14"
+                                    CornerRadius="12"
+                                    Background="Transparent">
+                                <StackPanel>
+                                    <DockPanel LastChildFill="False">
+                                        <TextBlock DockPanel.Dock="Left"
+                                                   Text="{Binding SidebarTitle}"
+                                                   FontWeight="SemiBold"
+                                                   FontSize="13.5"
+                                                   Foreground="#1F2937">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="#1F2937" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+                                                            <Setter Property="Foreground" Value="#0B5CAD" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <Border DockPanel.Dock="Right"
+                                                Padding="8,2"
+                                                CornerRadius="10"
+                                                Background="#EDF6EE">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="#EDF6EE" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+                                                            <Setter Property="Background" Value="#C8E0F8" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{Binding SidebarStateText}"
+                                                       FontSize="11"
+                                                       Foreground="#2F6F44">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Foreground" Value="#2F6F44" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+                                                                <Setter Property="Foreground" Value="#0B5CAD" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Border>
+                                    </DockPanel>
+
+                                    <TextBlock Margin="0,6,0,0"
+                                               Text="{Binding SidebarSubtitle}"
+                                               Foreground="#667085"
+                                               TextWrapping="Wrap">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#667085" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+                                                        <Setter Property="Foreground" Value="#335E82" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <TextBlock Margin="0,6,0,0"
+                                               Text="{Binding StartupModeText}"
+                                               Foreground="#8B95A1"
+                                               FontSize="11.5">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#8B95A1" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}" Value="True">
+                                                        <Setter Property="Foreground" Value="#4C7396" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal">
+                        <Button Command="{Binding AddCameraCommand}"
+                                Style="{StaticResource IconToolButtonStyle}"
+                                ToolTip="新增相机">
+                            <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" />
+                        </Button>
+
+                        <Button Command="{Binding RemoveCameraCommand}"
+                                Style="{StaticResource IconToolButtonStyle}"
+                                ToolTip="删除当前相机">
+                            <materialDesign:PackIcon Kind="Minus" Width="18" Height="18" />
+                        </Button>
+
+                        <Button Command="{Binding MoveSelectedCameraUpCommand}"
+                                Style="{StaticResource IconToolButtonStyle}"
+                                ToolTip="上移当前相机">
+                            <materialDesign:PackIcon Kind="ArrowUp" Width="18" Height="18" />
+                        </Button>
+
+                        <Button Command="{Binding MoveSelectedCameraDownCommand}"
+                                Style="{StaticResource IconToolButtonStyle}"
+                                ToolTip="下移当前相机"
+                                Margin="0">
+                            <materialDesign:PackIcon Kind="ArrowDown" Width="18" Height="18" />
+                        </Button>
+                    </StackPanel>
+
+                    <Button Grid.Column="1"
+                            Click="OnSave"
+                            Style="{StaticResource IconToolButtonStyle}"
+                            ToolTip="保存配置"
+                            Margin="0">
+                        <materialDesign:PackIcon Kind="ContentSaveOutline" Width="18" Height="18" />
+                    </Button>
+                </Grid>
+            </Grid>
+        </materialDesign:Card>
+
+        <materialDesign:Card Grid.Row="1" Grid.Column="2" Padding="20">
+            <Grid>
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Foreground="#667085"
+                           FontSize="14"
+                           Text="请先在左侧选择一个相机配置。">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding HasSelectedCamera}" Value="True">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              DataContext="{Binding SelectedCamera}"
+                              Visibility="{Binding DataContext.HasSelectedCamera, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <StackPanel>
+                        <Border Style="{StaticResource SectionCardStyle}">
+                            <StackPanel>
+                                <CheckBox Content="启用该相机"
+                                          IsChecked="{Binding IsEnabled}" />
+                                <Border Height="1" Margin="0,12,0,14" Background="#DCE4ED" />
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="96" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Text="名称" Style="{StaticResource FieldLabelStyle}" />
+                                    <TextBox Grid.Column="1"
+                                             Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="1"
+                                               Text="驱动程序"
+                                               Style="{StaticResource FieldLabelStyle}"
+                                               Margin="0,12,0,0" />
+                                    <ComboBox Grid.Row="1"
+                                              Grid.Column="1"
+                                              Margin="0,12,0,0"
+                                              ItemsSource="{Binding DataContext.CameraProviders, RelativeSource={RelativeSource AncestorType=Window}}"
+                                              DisplayMemberPath="DisplayName"
+                                              SelectedValuePath="ProviderId"
+                                              SelectedValue="{Binding SelectedProviderId}" />
+
+                                    <TextBlock Grid.Row="2"
+                                               Text="已发现设备"
+                                               Style="{StaticResource FieldLabelStyle}"
+                                               Margin="0,12,0,0" />
+                                    <Grid Grid.Row="2" Grid.Column="1" Margin="0,12,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <ComboBox Grid.Column="0"
+                                                  ItemsSource="{Binding AvailableDevices}"
+                                                  DisplayMemberPath="DisplayName"
+                                                  SelectedItem="{Binding SelectedDevice}"
+                                                  IsEnabled="{Binding HasDiscoveredDevices}" />
+                                        <Button Grid.Column="1"
+                                                Width="32"
+                                                Height="32"
+                                                Margin="8,0,0,0"
+                                                Padding="0"
+                                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                Command="{Binding RefreshDevicesCommand}"
+                                                ToolTip="刷新设备列表">
+                                            <materialDesign:PackIcon Kind="Refresh" Width="16" Height="16" />
+                                        </Button>
+                                    </Grid>
+
+                                    <TextBlock Grid.Row="3"
+                                               Text="相机索引"
+                                               Margin="0,12,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock" BasedOn="{StaticResource FieldLabelStyle}">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding UsesDeviceIdentifiers}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBox Grid.Row="3"
+                                             Grid.Column="1"
+                                             Margin="0,12,0,0"
+                                             Width="180"
+                                             HorizontalAlignment="Left"
+                                             Text="{Binding CameraIndexText, UpdateSourceTrigger=PropertyChanged}">
+                                        <TextBox.Style>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Visibility" Value="Visible" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding UsesDeviceIdentifiers}" Value="True">
+                                                        <Setter Property="Visibility" Value="Collapsed" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBox.Style>
+                                    </TextBox>
+
+                                    <TextBlock Grid.Row="4"
+                                               Text="设备标识"
+                                               Style="{StaticResource FieldLabelStyle}"
+                                               Margin="0,12,0,0"
+                                               Visibility="{Binding UsesDeviceIdentifiers, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                    <TextBox Grid.Row="4"
+                                             Grid.Column="1"
+                                             Margin="0,12,0,0"
+                                             Text="{Binding DeviceIdText, UpdateSourceTrigger=PropertyChanged}"
+                                             IsEnabled="{Binding UsesDeviceIdentifiers}"
+                                             Visibility="{Binding UsesDeviceIdentifiers, Converter={StaticResource BoolToVisibilityConverter}}" />
+                                </Grid>
+
+                                <Border Height="1" Margin="0,6,0,14" Background="#DCE4ED" />
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="96" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="目标帧率" Style="{StaticResource FieldLabelStyle}" />
+                                    <TextBox Grid.Column="1"
+                                             Width="180"
+                                             HorizontalAlignment="Left"
+                                             Text="{Binding TargetFpsText, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                                <CheckBox Margin="0,14,0,0"
+                                          Content="视频时间戳优先使用源 PTS（关闭时改用主机单调时间）"
+                                          IsChecked="{Binding UseSourcePtsForVideo}" />
+                                <Grid Margin="0,14,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="96" />
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="140" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="图像变换" Style="{StaticResource FieldLabelStyle}" VerticalAlignment="Center" />
+                                    <ComboBox Grid.Column="1"
+                                              SelectedValue="{Binding Rotation}"
+                                              SelectedValuePath="Tag"
+                                              Margin="0,0,10,0">
+                                        <ComboBoxItem Tag="{x:Static camera:CameraRotation.None}" Content="无旋转" />
+                                        <ComboBoxItem Tag="{x:Static camera:CameraRotation.Rotate90}" Content="顺时针 90°" />
+                                        <ComboBoxItem Tag="{x:Static camera:CameraRotation.Rotate180}" Content="180°" />
+                                        <ComboBoxItem Tag="{x:Static camera:CameraRotation.Rotate270}" Content="逆时针 90°" />
+                                    </ComboBox>
+                                    <ComboBox Grid.Column="3"
+                                              SelectedValue="{Binding MirrorMode}"
+                                              SelectedValuePath="Tag"
+                                              Margin="0,0,10,0">
+                                        <ComboBoxItem Tag="{x:Static camera:CameraMirrorMode.None}" Content="无镜像" />
+                                        <ComboBoxItem Tag="{x:Static camera:CameraMirrorMode.Horizontal}" Content="水平镜像" />
+                                        <ComboBoxItem Tag="{x:Static camera:CameraMirrorMode.Vertical}" Content="垂直镜像" />
+                                        <ComboBoxItem Tag="{x:Static camera:CameraMirrorMode.Both}" Content="水平+垂直" />
+                                    </ComboBox>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource SectionCardStyle}" Margin="0,16,0,0">
+                            <StackPanel>
+                                <TextBlock Text="任务配置" Style="{StaticResource SectionTitleStyle}" />
+
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="视觉任务"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,12,0"
+                                               Foreground="#667085" />
+                                    <ComboBox Grid.Column="1"
+                                              MinHeight="34"
+                                              Padding="8,4"
+                                              ItemsSource="{Binding DataContext.AvailableVisionTasks, RelativeSource={RelativeSource AncestorType=Window}}"
+                                              SelectedValuePath="Id"
+                                              SelectedValue="{Binding PrimaryTaskId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              DisplayMemberPath="DisplayName" />
+                                    <Button Grid.Column="2"
+                                            Width="32"
+                                            Height="32"
+                                            Margin="8,0,0,0"
+                                            Padding="0"
+                                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                                            Command="{Binding DataContext.RefreshModelsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            ToolTip="刷新模型目录">
+                                        <materialDesign:PackIcon Kind="Refresh" Width="16" Height="16" />
+                                    </Button>
+                                </Grid>
+
+                                <Grid Margin="0,0,0,10">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Button MinWidth="140"
+                                            Command="{Binding DataContext.BuildSelectedTensorRtCacheCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Content="构建当前缓存"
+                                            Style="{StaticResource SecondaryDialogButtonStyle}"
+                                            ToolTip="为当前选中的 ONNX 视觉任务构建 TensorRT 引擎缓存" />
+                                    <Button Grid.Column="1"
+                                            MinWidth="100"
+                                            Margin="10,0,0,0"
+                                            Command="{Binding DataContext.RunEnvironmentDiagnosticsCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                            Content="环境诊断"
+                                            Style="{StaticResource SecondaryDialogButtonStyle}" />
+                                    <Ellipse Grid.Column="2"
+                                             Width="8" Height="8"
+                                             Margin="10,0,6,0"
+                                             VerticalAlignment="Center">
+                                        <Ellipse.Style>
+                                            <Style TargetType="Ellipse">
+                                                <Setter Property="Fill" Value="#94A3B8" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding DataContext.IsTensorRtReady, RelativeSource={RelativeSource AncestorType=Window}}" Value="True">
+                                                        <Setter Property="Fill" Value="#22C55E" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Ellipse.Style>
+                                    </Ellipse>
+                                    <TextBlock Grid.Column="3"
+                                               VerticalAlignment="Center"
+                                               Foreground="#667085"
+                                               Text="{Binding DataContext.CacheBuildStatusText, RelativeSource={RelativeSource AncestorType=Window}}"
+                                               TextWrapping="Wrap" />
+                                </Grid>
+
+                                <Border Background="#FFFFFF"
+                                        BorderBrush="#E3EAF1"
+                                        BorderThickness="1"
+                                        CornerRadius="10"
+                                        Padding="12">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Grid Grid.ColumnSpan="2" Margin="0,0,0,8">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="诊断结果"
+                                                       Style="{StaticResource FieldLabelStyle}"
+                                                       VerticalAlignment="Center" />
+                                            <Border Grid.Column="1"
+                                                    Margin="8,0,0,0"
+                                                    Padding="8,2"
+                                                    CornerRadius="10"
+                                                    VerticalAlignment="Center">
+                                                <TextBlock FontSize="12"
+                                                           FontWeight="SemiBold"
+                                                           Text="{Binding DataContext.DiagnosticsStatusInfo.Title, RelativeSource={RelativeSource AncestorType=Window}}">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding DataContext.DiagnosticsStatusInfo.State, RelativeSource={RelativeSource AncestorType=Window}}" Value="Success">
+                                                                    <Setter Property="Foreground" Value="#1B7A3D" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding DataContext.DiagnosticsStatusInfo.State, RelativeSource={RelativeSource AncestorType=Window}}" Value="Warning">
+                                                                    <Setter Property="Foreground" Value="#B55A1E" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding DataContext.DiagnosticsStatusInfo.State, RelativeSource={RelativeSource AncestorType=Window}}" Value="Error">
+                                                                    <Setter Property="Foreground" Value="#C42B1C" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Border>
+                                        </Grid>
+                                        <TextBlock Grid.Row="1"
+                                                   Foreground="#344054"
+                                                   Text="{Binding DataContext.EnvironmentDiagnosticsStatus, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                   TextWrapping="Wrap" />
+                                        <StackPanel Grid.Row="2" Margin="0,8,0,0">
+                                            <TextBlock Foreground="#667085"
+                                                       Text="{Binding DataContext.EnvironmentDiagnosticsLogPath, RelativeSource={RelativeSource AncestorType=Window}, StringFormat=诊断日志：{0}}"
+                                                       TextWrapping="Wrap" />
+                                            <TextBlock Margin="0,4,0,0"
+                                                       Foreground="#667085"
+                                                       Text="{Binding DataContext.ProviderInitLogPath, RelativeSource={RelativeSource AncestorType=Window}, StringFormat=provider 日志：{0}}"
+                                                       TextWrapping="Wrap" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource SectionCardStyle}" Margin="0,16,0,0">
+                            <StackPanel>
+                                <TextBlock Text="SOP 配置" Style="{StaticResource SectionTitleStyle}" />
+                                <TextBlock Text="选择此相机使用的 SOP 配置。SOP 配置在独立管理页面中创建和编辑。"
+                                           Foreground="#667085"
+                                           FontSize="12"
+                                           TextWrapping="Wrap"
+                                           Margin="0,0,0,10" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="SOP 配置"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,12,0"
+                                               Foreground="#667085" />
+                                    <ComboBox Grid.Column="1"
+                                              MinHeight="34"
+                                              Padding="8,4"
+                                              ItemsSource="{Binding AvailableSopProfiles}"
+                                              DisplayMemberPath="Name"
+                                              SelectedValuePath="Id"
+                                              SelectedValue="{Binding SelectedSopProfileId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    <TextBlock Grid.Column="2"
+                                               VerticalAlignment="Center"
+                                               Foreground="#8B95A1"
+                                               FontSize="11.5"
+                                               Margin="8,0,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding SelectedSopProfileId}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                        使用默认 SOP 配置
+                                    </TextBlock>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource SectionCardStyle}" Margin="0,16,0,0">
+                            <StackPanel>
+                                <TextBlock Text="录制" Style="{StaticResource SectionTitleStyle}" />
+
+                                <CheckBox Content="启用录制"
+                                          IsChecked="{Binding EnableRecording}" />
+
+                                <Grid Margin="0,14,0,0">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="120" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <TextBlock Text="存储目录" Style="{StaticResource FieldLabelStyle}" />
+                                    <Grid Grid.Column="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBox Grid.Column="0"
+                                                 Text="{Binding RecordingRootDirectoryText, UpdateSourceTrigger=PropertyChanged}" />
+                                        <Button Grid.Column="1"
+                                                Margin="10,0,0,0"
+                                                MinWidth="84"
+                                                Style="{StaticResource SecondaryDialogButtonStyle}"
+                                                Content="浏览"
+                                                Command="{Binding DataContext.BrowseRecordingRootDirectoryCommand, RelativeSource={RelativeSource AncestorType=Window}}" />
+                                    </Grid>
+
+                                    <TextBlock Grid.Row="1"
+                                               Text="分段时长(分钟)"
+                                               Style="{StaticResource FieldLabelStyle}"
+                                               Margin="0,12,0,0" />
+                                    <TextBox Grid.Row="1"
+                                             Grid.Column="1"
+                                             Margin="0,12,0,0"
+                                             Width="180"
+                                             HorizontalAlignment="Left"
+                                             Text="{Binding RecordingSegmentMinutesText, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <TextBlock Grid.Row="2"
+                                               Text="封装格式"
+                                               Style="{StaticResource FieldLabelStyle}"
+                                               Margin="0,12,0,0" />
+                                    <ComboBox Grid.Row="2"
+                                              Grid.Column="1"
+                                              Margin="0,12,0,0"
+                                              Width="180"
+                                              HorizontalAlignment="Left"
+                                              ItemsSource="{Binding RecordingContainerFormats}"
+                                              SelectedItem="{Binding SelectedRecordingContainerFormat}" />
+
+                                    <TextBlock Grid.Row="3"
+                                               Text="视频编码器"
+                                               Style="{StaticResource FieldLabelStyle}"
+                                               Margin="0,12,0,0" />
+                                    <ComboBox Grid.Row="3"
+                                              Grid.Column="1"
+                                              Margin="0,12,0,0"
+                                              Width="220"
+                                              HorizontalAlignment="Left"
+                                              ItemsSource="{Binding RecordingVideoEncoders}"
+                                              SelectedItem="{Binding SelectedRecordingVideoEncoder}" />
+
+                                    <TextBlock Grid.Row="4"
+                                               Text="码率(Mbps)"
+                                               Style="{StaticResource FieldLabelStyle}"
+                                               Margin="0,12,0,0" />
+                                    <TextBox Grid.Row="4"
+                                             Grid.Column="1"
+                                             Margin="0,12,0,0"
+                                             Width="180"
+                                             HorizontalAlignment="Left"
+                                             Text="{Binding RecordingBitrateMbpsText, UpdateSourceTrigger=PropertyChanged}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </materialDesign:Card>
+    </Grid>
+</Window>

@@ -1,0 +1,73 @@
+<UserControl x:Class="VideoInferenceDemo.ImageInspection.Controls.CameraViewportTile"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:VideoInferenceDemo.ImageInspection.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Name="Root"
+             d:DesignHeight="420"
+             d:DesignWidth="680"
+             MinHeight="260"
+             mc:Ignorable="d">
+    <Border Margin="3"
+            Background="White"
+            BorderBrush="#D5E0EA"
+            BorderThickness="1"
+            CornerRadius="8"
+            ClipToBounds="True">
+        <Border.InputBindings>
+            <MouseBinding Command="{Binding SelectCommand, ElementName=Root}"
+                          CommandParameter="{Binding Camera, ElementName=Root}"
+                          MouseAction="LeftClick" />
+        </Border.InputBindings>
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="BorderBrush" Value="#D5E0EA" />
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding Camera.IsSelected, RelativeSource={RelativeSource AncestorType={x:Type controls:CameraViewportTile}}}" Value="True">
+                        <Setter Property="BorderBrush" Value="#4B83B6" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="34" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0"
+                    Padding="10,0"
+                    Background="#F7FAFD"
+                    BorderBrush="#E1E8F0"
+                    BorderThickness="0,0,0,1"
+                    CornerRadius="8,8,0,0">
+                <DockPanel VerticalAlignment="Center">
+                    <materialDesign:PackIcon Width="16"
+                                             Height="16"
+                                             DockPanel.Dock="Left"
+                                             VerticalAlignment="Center"
+                                             Foreground="#52677A"
+                                             Kind="CameraOutline" />
+                    <TextBlock Margin="8,0,0,0"
+                               VerticalAlignment="Center"
+                               FontSize="13"
+                               FontWeight="SemiBold"
+                               Foreground="#203243"
+                               Text="{Binding Camera.Name, RelativeSource={RelativeSource AncestorType={x:Type controls:CameraViewportTile}}}" />
+                    <TextBlock DockPanel.Dock="Right"
+                               VerticalAlignment="Center"
+                               FontSize="12"
+                               Foreground="#6A7F92"
+                               Text="{Binding Camera.StatusText, RelativeSource={RelativeSource AncestorType={x:Type controls:CameraViewportTile}}}" />
+                </DockPanel>
+            </Border>
+
+            <controls:InspectionImageCanvas Grid.Row="1"
+                                            ImageSource="{Binding Camera.FrameImage, RelativeSource={RelativeSource AncestorType={x:Type controls:CameraViewportTile}}}"
+                                            OverlayItems="{Binding Camera.ResultOverlayItems, RelativeSource={RelativeSource AncestorType={x:Type controls:CameraViewportTile}}}" />
+        </Grid>
+    </Border>
+</UserControl>

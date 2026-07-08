@@ -1,0 +1,6 @@
+namespace VideoInferenceDemo.ImageInspection.Services;
+
+public interface IFolderPickerService
+{
+    string? PickFolder(string title, string? initialDirectory = null);
+}

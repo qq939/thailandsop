@@ -1,0 +1,94 @@
+{
+  "Branding": {
+    "VideoInference": {
+      "WindowTitle": "SOP \u5408\u89c4\u68c0\u6d4b\u53f0",
+      "HomeTitle": "SOP \u5408\u89c4\u68c0\u6d4b\u53f0"
+    },
+    "ImageInspection": {
+      "WindowTitle": "\u56fe\u50cf\u68c0\u6d4b\u5de5\u4f5c\u53f0",
+      "HomeTitle": "\u56fe\u50cf\u68c0\u6d4b\u5de5\u4f5c\u53f0"
+    }
+  },
+  "Db": {
+    "EnableRawDetections": true,
+    "EnableTcnFeatures": false,
+    "EnableTcnInference": false
+  },
+  "Analysis": {
+    "EnableOnlineAnalysis": true,
+    "Strategy": "sop_rules",
+    "FrameWindowSize": 100,
+    "StateWindowSize": 30,
+    "NearThresholdQ1000": 300,
+    "NearStep": null,
+    "HoldFrames": 10,
+    "SopWindowMs": 1500,
+    "SopMinScoreQ1000": 450,
+    "SopMinVisibleRatioQ1000": 600
+  },
+  "ModbusModules": [
+    {
+      "Enabled": true,
+      "Id": "modbus-1",
+      "Name": "Modbus IO 模块 1",
+      "Host": "192.168.1.100",
+      "Port": 502,
+      "SlaveAddress": 1,
+      "PollIntervalMs": 500,
+      "OutputStartAddress": 0,
+      "InputStartAddress": 0,
+      "Lights": [
+        {
+          "LightNumber": 1,
+          "RedChannelNumber": 1,
+          "GreenChannelNumber": 2,
+          "BuzzerChannelNumber": 3,
+          "BuzzerEnabled": true
+        },
+        {
+          "LightNumber": 2,
+          "RedChannelNumber": 4,
+          "GreenChannelNumber": 5,
+          "BuzzerChannelNumber": 6,
+          "BuzzerEnabled": true
+        }
+      ]
+    }
+  ],
+  "FingerprintModules": [
+    {
+      "Enabled": false,
+      "Id": "fingerprint-1",
+      "Name": "指纹模块1",
+      "ConnectionKind": "SerialRtu",
+      "SlaveAddress": 1,
+      "PortName": "COM3",
+      "BaudRate": 9600,
+      "DataBits": 8,
+      "Parity": "None",
+      "StopBits": 1,
+      "Host": "127.0.0.1",
+      "TcpPort": 502,
+      "ReadTimeoutMs": 1000,
+      "WriteTimeoutMs": 1000,
+      "PollIntervalMs": 200,
+      "DuplicateSuppressMs": 3000
+    }
+  ],
+  "SopProfiles": [
+    {
+      "Id": "sop-default",
+      "Name": "默认组装 SOP",
+      "Strategy": "sop_rules",
+      "FingerprintModuleId": "fingerprint-1",
+      "Steps": [
+        { "Step": 1, "Name": "拿内盒完成" },
+        { "Step": 2, "Name": "装适配器完成" },
+        { "Step": 3, "Name": "装脚垫完成" },
+        { "Step": 4, "Name": "装产品完成" },
+        { "Step": 5, "Name": "装保修卡完成" },
+        { "Step": 6, "Name": "装外盒完成" }
+      ]
+    }
+  ]
+}

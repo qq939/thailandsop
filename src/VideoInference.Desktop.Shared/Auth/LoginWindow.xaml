@@ -1,0 +1,135 @@
+<Window x:Class="VideoInferenceDemo.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="登录"
+        Width="520"
+        Height="440"
+        MinWidth="520"
+        MinHeight="440"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="#F3F6FA"
+        FontFamily="Microsoft YaHei UI">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+    </Window.Resources>
+
+    <Grid Margin="36,32,36,32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,28">
+            <Border Width="82"
+                    Height="82"
+                    HorizontalAlignment="Center"
+                    Background="#16324F"
+                    CornerRadius="41">
+                <materialDesign:PackIcon Width="50"
+                                         Height="50"
+                                         HorizontalAlignment="Center"
+                                         VerticalAlignment="Center"
+                                         Foreground="#E8F2FB"
+                                         Kind="AccountCircle" />
+            </Border>
+            <TextBlock Margin="0,14,0,0"
+                       HorizontalAlignment="Center"
+                       FontSize="24"
+                       FontWeight="SemiBold"
+                       Foreground="#1F3347"
+                       Text="用户登录" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1"
+                    Width="360"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <TextBlock Margin="0,0,0,8"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="#344054"
+                       Text="用户名" />
+            <ComboBox Height="44"
+                      MinHeight="44"
+                      Padding="10,4"
+                      VerticalContentAlignment="Center"
+                      ItemsSource="{Binding PersonnelOptions}"
+                      SelectedItem="{Binding SelectedPersonnel, Mode=TwoWay}"
+                      DisplayMemberPath="DisplayText" />
+
+            <TextBlock Margin="0,18,0,8"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       Foreground="#344054"
+                       Text="密码" />
+            <Grid Height="44" MinHeight="44">
+                <PasswordBox x:Name="PasswordInput"
+                             Height="44"
+                             Padding="10,0,40,0"
+                             VerticalContentAlignment="Center"
+                             KeyDown="OnPasswordKeyDown" />
+                <TextBox x:Name="PasswordVisibleInput"
+                         Padding="10,0,40,0"
+                         VerticalContentAlignment="Center"
+                         Visibility="Collapsed"
+                         KeyDown="OnPasswordKeyDown" />
+                <ToggleButton x:Name="PwToggleButton"
+                              Width="34"
+                              Height="34"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Center"
+                              Margin="0,0,3,0"
+                              Click="OnTogglePasswordVisibility"
+                              Background="Transparent"
+                              BorderThickness="0"
+                              ToolTip="显示密码">
+                    <materialDesign:PackIcon x:Name="PwToggleIcon"
+                                              Kind="EyeOff"
+                                              Width="18"
+                                              Height="18" />
+                </ToggleButton>
+            </Grid>
+
+            <Border Margin="0,14,0,0"
+                    Padding="10,8"
+                    Background="#FEF3F2"
+                    BorderBrush="#FECDCA"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Visibility="{Binding HasError, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="AlertCircleOutline"
+                                              Width="18"
+                                              Height="18"
+                                              Foreground="#B42318"
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,6,0" />
+                    <TextBlock Foreground="#B42318"
+                               Text="{Binding StatusText}"
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="0,28,0,0">
+            <Button MinWidth="94"
+                    Height="36"
+                    Margin="0,0,12,0"
+                    Click="OnCancel"
+                    Content="取消"
+                    Style="{StaticResource MaterialDesignOutlinedButton}" />
+            <Button MinWidth="94"
+                    Height="36"
+                    Click="OnLogin"
+                    Content="登录"
+                    Style="{StaticResource MaterialDesignRaisedButton}" />
+        </StackPanel>
+    </Grid>
+</Window>

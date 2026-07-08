@@ -1,0 +1,30 @@
+{
+  "id": "sop1-hbb",
+  "displayName": "sop1 YOLO11 Detection",
+  "description": "YOLO11 ONNX horizontal bounding-box detection model (640 input, 4 classes).",
+  "taskType": "detection",
+  "modelFile": "best.onnx",
+  "inputWidth": 640,
+  "inputHeight": 640,
+  "classes": [
+    "\u4EA7\u54C1",
+    "\u538B\u7D27",
+    "\u68C0\u6D4B\u63A5\u5934",
+    "\u6DA6\u6ED1"
+  ],
+  "boxColors": [
+    "#29B6F6",
+    "#66BB6A",
+    "#FFA726",
+    "#EF5350"
+  ],
+  "boxThickness": 2,
+  "labelFontScale": 0.9,
+  "yolo": {
+    "outputLayout": "channels_first",
+    "scoreMode": "class_only",
+    "classCount": 4,
+    "minScore": 0.25,
+    "nmsThreshold": 0.45
+  }
+}

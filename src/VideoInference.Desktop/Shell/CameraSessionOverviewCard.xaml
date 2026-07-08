@@ -1,0 +1,129 @@
+<UserControl x:Class="VideoInferenceDemo.CameraSessionOverviewCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <Style x:Key="OverviewIconButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Margin" Value="0,0,6,0" />
+        </Style>
+    </UserControl.Resources>
+
+    <materialDesign:Card Padding="6" Background="White">
+        <Expander IsExpanded="{Binding DataContext.IsStatsExpanded, RelativeSource={RelativeSource AncestorType=TabControl}, Mode=TwoWay}"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  MinHeight="0">
+            <Expander.Header>
+                <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="#1F3347" Text="运行概览" />
+            </Expander.Header>
+            <StackPanel Margin="0,4,0,0">
+                <WrapPanel Margin="0,0,0,10">
+                    <Border Margin="0,0,8,8" Padding="11,6" Background="#E7F1FA" CornerRadius="16">
+                        <TextBlock FontWeight="SemiBold" Foreground="#335978" Text="{Binding UiControlSourceText}" />
+                    </Border>
+                    <Border Margin="0,0,8,8" Padding="11,6" Background="#EEF2F6" CornerRadius="16">
+                        <TextBlock FontWeight="SemiBold" Foreground="#3D4A57" Text="{Binding UiRunStateText}" />
+                    </Border>
+                    <Border Margin="0,0,8,8" Padding="11,6" Background="#EEF1FF" CornerRadius="16">
+                        <TextBlock FontWeight="SemiBold" Foreground="#3752A6">
+                            <Run Text="{Binding TargetFpsDisplay, Mode=OneWay}" />
+                            <Run Text=" FPS" />
+                        </TextBlock>
+                    </Border>
+                    <Border Margin="0,0,8,8" Padding="11,6" Background="#E0F0E8" CornerRadius="16">
+                        <TextBlock FontWeight="SemiBold" Foreground="#2D6B50" Text="{Binding InferenceDeviceText}" />
+                    </Border>
+                </WrapPanel>
+
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
+                            Style="{StaticResource OverviewIconButtonStyle}"
+                            HorizontalAlignment="Center"
+                            Command="{Binding DataContext.OpenVideoCommand, RelativeSource={RelativeSource AncestorType=TabControl}}"
+                            ToolTip="打开视频">
+                        <materialDesign:PackIcon Kind="FileVideoOutline" Width="20" Height="20" />
+                    </Button>
+                    <Button Grid.Column="1"
+                            Style="{StaticResource OverviewIconButtonStyle}"
+                            HorizontalAlignment="Center"
+                            Command="{Binding StartCameraCommand}"
+                            ToolTip="启动当前相机">
+                        <materialDesign:PackIcon Kind="CameraPlusOutline" Width="20" Height="20" />
+                    </Button>
+                    <Button Grid.Column="2"
+                            Style="{StaticResource OverviewIconButtonStyle}"
+                            HorizontalAlignment="Center"
+                            Command="{Binding StopCameraCommand}"
+                            ToolTip="停止当前相机">
+                        <materialDesign:PackIcon Kind="CameraOffOutline" Width="20" Height="20" />
+                    </Button>
+                    <Button Grid.Column="3"
+                            Style="{StaticResource OverviewIconButtonStyle}"
+                            HorizontalAlignment="Center"
+                            Command="{Binding DataContext.PlayVideoCommand, RelativeSource={RelativeSource AncestorType=TabControl}}"
+                            ToolTip="{Binding DataContext.PlayButtonText, RelativeSource={RelativeSource AncestorType=TabControl}}">
+                        <materialDesign:PackIcon Kind="PlayCircleOutline" Width="20" Height="20" />
+                    </Button>
+                    <Button Grid.Column="4"
+                            Style="{StaticResource OverviewIconButtonStyle}"
+                            HorizontalAlignment="Center"
+                            Command="{Binding DataContext.PausePlaybackCommand, RelativeSource={RelativeSource AncestorType=TabControl}}"
+                            ToolTip="暂停">
+                        <materialDesign:PackIcon Kind="PauseCircleOutline" Width="20" Height="20" />
+                    </Button>
+                    <Button Grid.Column="5"
+                            Style="{StaticResource OverviewIconButtonStyle}"
+                            HorizontalAlignment="Center"
+                            Command="{Binding DataContext.StopCommand, RelativeSource={RelativeSource AncestorType=TabControl}}"
+                            ToolTip="停止">
+                        <materialDesign:PackIcon Kind="StopCircleOutline" Width="20" Height="20" />
+                    </Button>
+                </Grid>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Margin="0,0,12,8" HorizontalAlignment="Right" Foreground="#6A7786" Text="模型来源" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="SemiBold" Foreground="#1F3347" Text="{Binding DataContext.PrimaryTaskModelSourceText, RelativeSource={RelativeSource AncestorType=TabControl}}" />
+                    <TextBlock Grid.Row="1" Margin="0,0,12,8" HorizontalAlignment="Right" Foreground="#6A7786" Text="采集 FPS" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding CaptureFps, Mode=OneWay, StringFormat={}{0:F1}}" />
+                    <TextBlock Grid.Row="2" Margin="0,0,12,8" HorizontalAlignment="Right" Foreground="#6A7786" Text="时长" />
+                    <TextBlock Grid.Row="2" Grid.Column="1">
+                        <Run Text="{Binding SourceDurationDisplay, Mode=OneWay}" />
+                        <Run Text=" / " />
+                        <Run Text="{Binding PlaybackTimeDisplay, Mode=OneWay}" />
+                    </TextBlock>
+                    <TextBlock Grid.Row="3" Margin="0,0,12,0" HorizontalAlignment="Right" Foreground="#6A7786" Text="最后一帧" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding LastFrameInfo}" />
+                </Grid>
+                <Separator Margin="0,16,0,12" />
+                <TextBlock Foreground="#6B7A8A" Text="最近错误" />
+                <TextBlock Margin="0,6,0,0" Foreground="#B00020" Text="{Binding LastError}" TextWrapping="Wrap" />
+            </StackPanel>
+        </Expander>
+    </materialDesign:Card>
+</UserControl>

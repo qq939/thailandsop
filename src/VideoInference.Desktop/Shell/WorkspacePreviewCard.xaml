@@ -1,0 +1,29 @@
+<UserControl x:Class="VideoInferenceDemo.WorkspacePreviewCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <materialDesign:Card Padding="14" Background="White">
+        <Border Background="#0E1117" CornerRadius="12">
+            <Grid>
+                <Image Stretch="Uniform" Source="{Binding Workspace.VideoFrame}" />
+                <Border Margin="14"
+                        Padding="10,6"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Background="#8C111827"
+                        CornerRadius="16">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Width="16" Height="16" Foreground="#E7EDF5" Kind="CameraOutline" />
+                        <TextBlock Margin="8,0,0,0"
+                                   FontSize="12.5"
+                                   Foreground="#E7EDF5"
+                                   Text="{Binding Workspace.SourceLabel}" />
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+    </materialDesign:Card>
+</UserControl>

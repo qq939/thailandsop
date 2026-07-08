@@ -1,0 +1,46 @@
+<UserControl x:Class="VideoInferenceDemo.WorkspaceFsmCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <materialDesign:Card Padding="6" Background="White">
+        <Expander IsExpanded="{Binding IsSopExpanded, Mode=TwoWay}"
+                  Background="Transparent"
+                  BorderThickness="0"
+                  MinHeight="0">
+            <Expander.Header>
+                <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="#1F3347" Text="SOP 步骤" />
+            </Expander.Header>
+            <StackPanel Margin="0,4,0,0">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemTemplate="{StaticResource FsmStepTemplate}" ItemsSource="{Binding Workspace.FsmSteps}" />
+                </ScrollViewer>
+                <Grid Margin="0,6,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Border MinWidth="72"
+                            Height="30"
+                            HorizontalAlignment="Left"
+                            Background="{Binding SopOutcomeBackground}"
+                            CornerRadius="4">
+                        <TextBlock HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   FontSize="14"
+                                   FontWeight="SemiBold"
+                                   Foreground="{Binding SopOutcomeForeground}"
+                                   Text="{Binding SopOutcomeText}" />
+                    </Border>
+                    <Button Grid.Column="1"
+                            MinWidth="84"
+                            Height="30"
+                            Command="{Binding ResetSopFaultCommand}"
+                            Content="复位故障" />
+                </Grid>
+            </StackPanel>
+        </Expander>
+    </materialDesign:Card>
+</UserControl>
