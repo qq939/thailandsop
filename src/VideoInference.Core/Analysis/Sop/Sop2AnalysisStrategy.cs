@@ -65,7 +65,8 @@ public sealed class Sop2AnalysisStrategy : IAnalysisStrategy
         var completedStep = context.State.ActiveStep;
         var nextStep = ResolveNextStep(completedStep);
 
-        if (completedStep >= StepPressing)
+        // 检查是否有等待重置的状态（上一帧是最后一步完成）
+        if (context.State.IsSopCyclePendingReset)
         {
             ResetCycle(context);
             return CycleReset(current, context);
@@ -251,6 +252,13 @@ public sealed class Sop2AnalysisStrategy : IAnalysisStrategy
         context.State.ActiveStep = step;
         context.State.HoldCounter = Math.Max(0, context.Config.HoldFrames);
 
+        var isLastStep = step == StepPressing;
+        if (isLastStep)
+        {
+            // 标记下一帧重置
+            context.State.IsSopCyclePendingReset = true;
+        }
+
         return Result(
             current,
             context,
@@ -258,7 +266,9 @@ public sealed class Sop2AnalysisStrategy : IAnalysisStrategy
             stateCode ?? GetStateCode(step),
             stateCode ?? GetStateCode(step),
             null,
-            debugNote);
+            debugNote,
+            ngReason: null,
+            isLastStep: isLastStep);
     }
 
     private static AnalysisResult Waiting(
@@ -310,7 +320,8 @@ public sealed class Sop2AnalysisStrategy : IAnalysisStrategy
         string? currentStateCode,
         double? score,
         string debugNote,
-        string? ngReason = null)
+        string? ngReason = null,
+        bool isLastStep = false)
     {
         return new AnalysisResult
         {
@@ -324,7 +335,9 @@ public sealed class Sop2AnalysisStrategy : IAnalysisStrategy
             DebugNote = debugNote,
             CurrentStateCode = currentStateCode,
             ExpectedStateCode = expectedStateCode,
-            NgReason = ngReason
+            NgReason = ngReason,
+            IsSopCycleReset = isLastStep,
+            IsReset = isLastStep
         };
     }
 
@@ -348,6 +361,7 @@ public sealed class Sop2AnalysisStrategy : IAnalysisStrategy
     {
         context.State.ActiveStep = null;
         context.State.HoldCounter = 0;
+        context.State.IsSopCyclePendingReset = false;
         context.State.Sop2.ResetCycle();
         SopModbusTriggerHelper.Reset(context, ModbusKey);
     }
