@@ -1030,11 +1030,6 @@ public sealed partial class CameraSessionViewModel : ObservableObject, IDisposab
                 _sopFaultActive = true;
             }
 
-            if (result.IsReset && !IsSopCycleReset(result))
-            {
-                ResetProductionStats();
-            }
-
             if (result.IsTransition && result.TransitionOk.HasValue)
             {
                 LastTransitionOk = result.TransitionOk.Value;

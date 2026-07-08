@@ -3,6 +3,52 @@ namespace VideoInferenceDemo.Tests.Analysis;
 public sealed class SopProcedureRuleEvaluatorTests
 {
     [Fact]
+    public void Analyze_CompletesCycle_WhenWarrantyCardIsLastConfiguredStep()
+    {
+        var engine = CreateEngineWithFinalWarrantyCardStep();
+        var results = new List<AnalysisResult>();
+        engine.ResultReady += results.Add;
+
+        var frameIndex = 0;
+        var ptsMs = 0L;
+
+        for (var i = 0; i < 3; i++)
+        {
+            engine.TryEnqueue(CreateFrame(frameIndex++, ptsMs += 100, InnerBox()));
+        }
+
+        for (var i = 0; i < 3; i++)
+        {
+            engine.TryEnqueue(CreateFrame(frameIndex++, ptsMs += 100, InnerBox(), ChargerTopRight()));
+        }
+
+        for (var i = 0; i < 3; i++)
+        {
+            engine.TryEnqueue(CreateFrame(frameIndex++, ptsMs += 100, InnerBox(), FootPadLeftHalf()));
+        }
+
+        for (var i = 0; i < 3; i++)
+        {
+            engine.TryEnqueue(CreateFrame(frameIndex++, ptsMs += 100, InnerBox(), ProductInside()));
+        }
+
+        for (var i = 0; i < 3; i++)
+        {
+            engine.TryEnqueue(CreateFrame(frameIndex++, ptsMs += 100, InnerBox(), WarrantyCardInside()));
+        }
+
+        var completed = results.Last(item => item.Step == 5);
+        Assert.True(completed.IsSopCycleReset);
+        Assert.True(completed.IsReset);
+        Assert.Contains("cycle_complete", completed.DebugNote);
+
+        engine.TryEnqueue(CreateFrame(frameIndex++, ptsMs += 100, InnerBox()));
+
+        Assert.Equal(1, results[^1].Step);
+        Assert.False(results[^1].IsSopCycleReset);
+    }
+
+    [Fact]
     public void Analyze_AdvancesThroughConfiguredProcedureSteps()
     {
         var engine = CreateEngine(includeCompleteStep: false);
@@ -518,6 +564,31 @@ public sealed class SopProcedureRuleEvaluatorTests
 
         var engine = new AnalysisEngine(config);
         engine.UpdateFsmDefinitions(steps);
+        return engine;
+    }
+
+    private static AnalysisEngine CreateEngineWithFinalWarrantyCardStep()
+    {
+        var config = new AnalysisConfig
+        {
+            EnableOnlineAnalysis = true,
+            Strategy = AnalysisStrategyNames.SopRules,
+            FrameWindowSize = 60,
+            StateWindowSize = 20,
+            SopWindowMs = 5000,
+            SopMinScoreQ1000 = 250,
+            SopMinVisibleRatioQ1000 = 500
+        };
+
+        var engine = new AnalysisEngine(config);
+        engine.UpdateFsmDefinitions(new List<FsmStepDefinition>
+        {
+            new() { Step = 1, Name = "拿内盒" },
+            new() { Step = 2, Name = "装电源" },
+            new() { Step = 3, Name = "装脚垫" },
+            new() { Step = 4, Name = "装产品" },
+            new() { Step = 5, Name = "装保修卡" }
+        });
         return engine;
     }
 

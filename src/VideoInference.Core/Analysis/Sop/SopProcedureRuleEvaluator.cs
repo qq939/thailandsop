@@ -74,7 +74,10 @@ internal static class SopProcedureRuleEvaluator
 
         if (TryMatchPositive(expected, frames, out var positive))
         {
-            var isSopCycleReset = expected.Kind == SopProcedureStepKind.Complete;
+            var isSopCycleReset = expectedIndex == configuredSteps.Length - 1;
+            var debugNote = isSopCycleReset
+                ? $"procedure_match; step={expected.Kind}; state={positive.StateCode}; cycle_complete"
+                : $"procedure_match; step={expected.Kind}; state={positive.StateCode}";
             
             context.State.ActiveStep = expected.Step.Step;
             context.State.HoldCounter = Math.Max(0, context.Config.HoldFrames);
@@ -89,7 +92,7 @@ internal static class SopProcedureRuleEvaluator
                 positive.StateCode,
                 positive.StateCode,
                 positive.Score,
-                $"procedure_match; step={expected.Kind}; state={positive.StateCode}",
+                debugNote,
                 null,
                 isSopCycleReset);
             return true;
