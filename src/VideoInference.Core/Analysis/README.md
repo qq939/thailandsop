@@ -1,5 +1,5 @@
 # Analysis 在线分析框架说明
-> Bug fix: IsSopCycleReset 的重置作用和第一步 IsReset 现在只清理 UI 状态，不清理 OK 数量了。
+> **本次更新总结**：简化了 SOP1-SOP4 和 SopRuleAnalysisStrategy 的步骤检测逻辑，每一步只需检测对应目标连续出现足够帧数；修复了 IsSopCycleReset 和 IsReset 的行为，现在只清理 UI 状态，不影响 OK 计数；优化了状态重置机制，最后一步完成后显示完整状态再重置，确保 OK 计数正确 +1。
 
 这个目录负责把视觉任务输出的检测结果转换成 SOP/FSM 状态。它的设计目标是：框架稳定，项目规则集中；以后新项目只需要改少量规则代码，不需要重新理解整条推理、UI、数据库链路。
 
