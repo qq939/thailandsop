@@ -305,7 +305,7 @@ internal static class SopProcedureHelpers
         return false;
     }
 
-    private static bool TryGetOnlyDetection(FsmFrameMetrics frame, DetectionSpec spec, out DetectionEntity detection)
+    internal static bool TryGetOnlyDetection(FsmFrameMetrics frame, DetectionSpec spec, out DetectionEntity detection)
     {
         detection = null!;
         var detections = (frame.Detections ?? Array.Empty<DetectionEntity>())
