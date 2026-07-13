@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -1046,7 +1046,7 @@ public sealed partial class CameraSessionViewModel : ObservableObject, IDisposab
             }
 
             ApplyAnalysisStep(
-                result.Step,
+                result.Step.HasValue ? result.Step + 1 : null,
                 result.IsReset,
                 !string.IsNullOrWhiteSpace(result.NgReason) ? false : result.TransitionOk,
                 !string.IsNullOrWhiteSpace(result.NgReason));
@@ -1060,9 +1060,11 @@ public sealed partial class CameraSessionViewModel : ObservableObject, IDisposab
             return;
         }
 
+        // isReset 时（最后一步完成后重置）：重置状态值
         if (isReset)
         {
             ResetFsmSnapshots();
+            // transitionOk 和 step 由 AnalysisEngine 传递，不要覆盖
         }
 
         if (!step.HasValue)
@@ -1077,6 +1079,7 @@ public sealed partial class CameraSessionViewModel : ObservableObject, IDisposab
             return;
         }
 
+        // 当 step 有值时，不要清除 active 状态，直接更新步骤显示
         if (isNg)
         {
             ApplyFsmSnapshotNgStep(step.Value);
@@ -1289,16 +1292,18 @@ public sealed partial class CameraSessionViewModel : ObservableObject, IDisposab
 
     private void ApplyFsmSnapshotStep(int step, bool? transitionOk)
     {
-        var nextStep = _fsmStepSnapshots
-            .Where(item => item.Step > step)
-            .Select(item => (int?)item.Step)
-            .FirstOrDefault();
+        // 追踪当前正在进行的步骤
+        var inProgressStep = step - 1;
 
         for (var i = 0; i < _fsmStepSnapshots.Count; i++)
         {
             var current = _fsmStepSnapshots[i];
-            if (current.Step <= step)
+
+            // 完成判定：current.Step == inProgressStep && transitionOk == true
+            // 注意：只有当 current.Step == inProgressStep（不是 <）时才判定为完成
+            if (current.Step == inProgressStep && transitionOk == true)
             {
+                // inProgressStep 步完成：标记为 Done
                 var endTime = current.EndTimeUtc ?? DateTimeOffset.UtcNow;
                 var duration = current.StartTimeUtc.HasValue ? endTime - current.StartTimeUtc.Value : current.Duration;
                 _fsmStepSnapshots[i] = current with
@@ -1309,34 +1314,17 @@ public sealed partial class CameraSessionViewModel : ObservableObject, IDisposab
                     Duration = duration
                 };
             }
-            else if (current.Step == nextStep)
+            else if (current.Step == step)
             {
-                if (transitionOk == false)
-                {
-                    var endTime = current.EndTimeUtc ?? DateTimeOffset.UtcNow;
-                    var duration = current.StartTimeUtc.HasValue ? endTime - current.StartTimeUtc.Value : current.Duration;
-                    _fsmStepSnapshots[i] = current with
-                    {
-                        Status = FsmStepStatus.Done,
-                        StartTimeUtc = current.StartTimeUtc ?? DateTimeOffset.UtcNow,
-                        EndTimeUtc = endTime,
-                        Duration = duration,
-                        IsNg = true
-                    };
-                    continue;
-                }
-
+                // 进行中判定：current.Step == step（第 step 步处于进行中）
                 _fsmStepSnapshots[i] = current with
                 {
                     Status = FsmStepStatus.InProgress,
                     StartTimeUtc = current.StartTimeUtc ?? DateTimeOffset.UtcNow,
-                    IsNg = transitionOk.HasValue && !transitionOk.Value
+                    IsNg = transitionOk == false
                 };
             }
-            else
-            {
-                _fsmStepSnapshots[i] = current with { Status = FsmStepStatus.Waiting };
-            }
+            // 其他步骤保持原状态不变
         }
 
         if (!_sopFaultActive &&

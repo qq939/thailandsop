@@ -215,26 +215,30 @@ public sealed class AnalysisEngine : ILegacyDetectionResultSink
     {
         var newStep = raw.Step;
         var isNg = !string.IsNullOrWhiteSpace(raw.NgReason);
-        var isTransition = !isNg && newStep.HasValue && (!previousStep.HasValue || previousStep.Value != newStep.Value);
         var firstStep = _steps.Count > 0 ? _steps[0].Step : (int?)null;
+
+        // 第一步开始（从 null 切换到第一步）时不触发 transition，因为这一步还没完成
+        var isTransition = !isNg && newStep.HasValue && previousStep.HasValue && previousStep.Value != newStep.Value;
         var isReset = raw.IsReset;
         bool? transitionOk = null;
 
         if (isTransition)
         {
-            if (firstStep.HasValue && newStep == firstStep)
-            {
-                transitionOk = true;
-                isReset = true;
-            }
-            else if (!previousStep.HasValue)
-            {
-                transitionOk = false;
-            }
-            else
-            {
-                transitionOk = IsSequential(previousStep.Value, newStep!.Value);
-            }
+            transitionOk = IsSequential(previousStep.Value, newStep!.Value);
+        }
+
+        // 第一步开始时：设置 isReset = true，且 transitionOk = true（让第一步有机会判定完成）
+        if (!isNg && newStep.HasValue && firstStep.HasValue && newStep == firstStep && !previousStep.HasValue)
+        {
+            isReset = true;
+            transitionOk = true;
+        }
+
+        // SOP 循环重置时：设置 step = 0
+        if (raw.IsSopCycleReset)
+        {
+            newStep = 0;
+            transitionOk = true;
         }
 
         return new AnalysisResult
@@ -244,7 +248,7 @@ public sealed class AnalysisEngine : ILegacyDetectionResultSink
             SourceKey = current.SourceKey,
             TaskId = current.TaskId,
             StrategyName = string.IsNullOrWhiteSpace(raw.StrategyName) ? _config.Strategy : raw.StrategyName,
-            Step = raw.Step,
+            Step = newStep,  // 使用 newStep 而不是 raw.Step，这样 IsSopCycleReset 时会返回 step=1
             Label = raw.Label,
             Score = raw.Score,
             FrameIndex = raw.FrameIndex,

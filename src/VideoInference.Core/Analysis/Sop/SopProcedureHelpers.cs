@@ -323,6 +323,39 @@ internal static class SopProcedureHelpers
         return true;
     }
 
+    // 检测内盒覆盖画面中心点，且只有内盒（不允许其他 bbox 类型）
+    internal static bool TryGetInnerBoxAtCenter(FsmFrameMetrics frame, out DetectionEntity detection)
+    {
+        detection = null!;
+        var detections = (frame.Detections ?? Array.Empty<DetectionEntity>())
+            .Where(item => item != null)
+            .ToArray();
+
+        // 必须只有内盒，不能有其他类型
+        if (detections.Length == 0 || !detections.All(item => Matches(item, InnerBox)))
+        {
+            return false;
+        }
+
+        // 计算画面中心点
+        var centerX = frame.FrameWidth * 0.5f;
+        var centerY = frame.FrameHeight * 0.5f;
+
+        // 找到包含中心点的内盒
+        foreach (var detectionEntity in detections.OrderByDescending(item => item.Score))
+        {
+            // 检查中心点是否在内盒边界框内
+            if (centerX >= detectionEntity.X1 && centerX <= detectionEntity.X2 &&
+                centerY >= detectionEntity.Y1 && centerY <= detectionEntity.Y2)
+            {
+                detection = detectionEntity;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static bool TryNormalizeBox(FsmFrameMetrics frame, DetectionEntity detection, out NormalizedBox box)
     {
         box = default;

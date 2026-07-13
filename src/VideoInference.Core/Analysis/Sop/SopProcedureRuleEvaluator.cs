@@ -6,7 +6,7 @@ namespace VideoInferenceDemo;
 
 internal static class SopProcedureRuleEvaluator
 {
-    private const int InnerBoxFrames = 2;
+    private const int InnerBoxFrames = 3;
     private const int ChargerFrames = 3;
     private const int ChargerWrongFrames = 3;
     private const int FootPadFrames = 1;
@@ -242,7 +242,7 @@ internal static class SopProcedureRuleEvaluator
                 if (SopProcedureHelpers.HasConsecutiveFrames(
                         frames,
                         InnerBoxFrames,
-                        frame => SopProcedureHelpers.TryGetOnlyDetection(frame, SopProcedureHelpers.InnerBox, out _)))
+                        frame => SopProcedureHelpers.TryGetInnerBoxAtCenter(frame, out _)))
                 {
                     signal = new MatchedSignal(
                         GetStateCode(step.Kind),
@@ -250,7 +250,7 @@ internal static class SopProcedureRuleEvaluator
                             frames,
                             InnerBoxFrames,
                             SopProcedureHelpers.InnerBox,
-                            frame => SopProcedureHelpers.TryGetOnlyDetection(frame, SopProcedureHelpers.InnerBox, out _)));
+                            frame => SopProcedureHelpers.TryGetInnerBoxAtCenter(frame, out _)));
                     return true;
                 }
 
